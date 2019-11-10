@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/url_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="text"
+        android:text="http://10.0.2.2:8088/janus" />
+
+    <Button
+        android:id="@+id/api_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="API Test"
+        android:onClick="route"
+        tools:layout_editor_absoluteX="90dp"
+        tools:layout_editor_absoluteY="60dp" />
+
+    <Button
+        android:id="@+id/datachannel_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="DataChannel Test"
+        android:onClick="route"
+        tools:layout_editor_absoluteX="90dp"
+        tools:layout_editor_absoluteY="60dp" />
+
+    <Button
+        android:id="@+id/echotest_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Echotest Test"
+        android:onClick="route"
+        tools:layout_editor_absoluteX="90dp"
+        tools:layout_editor_absoluteY="60dp" />
+
+    <Button
+        android:id="@+id/streaming_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Streaming Test"
+        android:onClick="route"
+        tools:layout_editor_absoluteX="90dp"
+        tools:layout_editor_absoluteY="60dp" />
+
+    <Button
+        android:id="@+id/videoroom_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Videoroom Test"
+        android:onClick="route"
+        tools:layout_editor_absoluteX="90dp"
+        tools:layout_editor_absoluteY="60dp" />
+
+</LinearLayout>

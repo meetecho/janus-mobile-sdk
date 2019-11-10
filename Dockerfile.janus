@@ -1,0 +1,56 @@
+from ubuntu:18.04
+
+run apt-get update && apt-get install -y git python3-pip gdb apache2
+
+run apt-get update && apt-get install -y build-essential autoconf automake
+
+run apt-get update && apt-get install -y software-properties-common
+run apt-get update && apt-get install -y --force-yes ffmpeg libavutil-dev libavcodec-dev libavformat-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-base gstreamer1.0-tools libconfig-dev
+
+run apt-get update && apt-get install -y libmicrohttpd-dev libjansson-dev libsofia-sip-ua-dev libglib2.0-dev libopus-dev libevent-dev libtool git gengetopt libogg-dev libvorbis-dev subversion wget libssl-dev openssl cmake
+run apt-get install -y gtk-doc-tools && cd /root && git clone https://gitlab.freedesktop.org/libnice/libnice.git && cd libnice && ./autogen.sh && ./configure --prefix=/usr && make && make install
+run cd /root && git clone https://github.com/warmcat/libwebsockets && cd libwebsockets && git checkout v2.4.0 && mkdir build && cd build && cmake -DLWS_MAX_SMP=1 -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_C_FLAGS="-fpic" .. && make && make install
+run cd /root && wget https://github.com/cisco/libsrtp/archive/v2.2.0.tar.gz -O libsrtp-2.2.0.tar.gz && tar xfv libsrtp-2.2.0.tar.gz
+run cd /root/libsrtp-2.2.0 && ./configure --prefix=/usr --enable-openssl && make shared_library && make install
+run cd /root && git clone https://github.com/sctplab/usrsctp && cd usrsctp && ./bootstrap && ./configure --prefix=/usr && make && make install
+run git clone https://github.com/meetecho/janus-gateway.git /root/janus-gateway && cd /root/janus-gateway && git checkout v0.7.4
+run cd /root/janus-gateway && ./autogen.sh && ./configure --prefix=/opt/janus --enable-post-processing --disable-docs --disable-plugin-lua && make && make install 
+run cd /root/janus-gateway && make configs
+
+run pip3 install gdbgui
+
+run apt-get clean && apt-get autoclean && apt-get autoremove
+
+run rm -rf /var/www/html
+run ln -s /root/janus-gateway/html /var/www/html
+
+expose 8088
+cmd /opt/janus/bin/janus --stun-server=stun.l.google.com:19302 --rtp-port-range=9000-9020
+from ubuntu:18.04
+
+run apt-get update && apt-get install -y git python3-pip gdb nginx
+
+run apt-get update && apt-get install -y build-essential autoconf automake
+
+run apt-get update && apt-get install -y software-properties-common
+run apt-get update && apt-get install -y --force-yes ffmpeg libavutil-dev libavcodec-dev libavformat-dev gstreamer1.0-plugins-good gstreamer1.0-plugins-base gstreamer1.0-tools libconfig-dev
+
+run apt-get update && apt-get install -y libmicrohttpd-dev libjansson-dev libsofia-sip-ua-dev libglib2.0-dev libopus-dev libevent-dev libtool git gengetopt libogg-dev libvorbis-dev subversion wget libssl-dev openssl cmake
+run apt-get install -y gtk-doc-tools && cd /root && git clone https://gitlab.freedesktop.org/libnice/libnice.git && cd libnice && ./autogen.sh && ./configure --prefix=/usr && make && make install
+run cd /root && git clone https://github.com/warmcat/libwebsockets && cd libwebsockets && git checkout v2.4.0 && mkdir build && cd build && cmake -DLWS_MAX_SMP=1 -DCMAKE_INSTALL_PREFIX:PATH=/usr -DCMAKE_C_FLAGS="-fpic" .. && make && make install
+run cd /root && wget https://github.com/cisco/libsrtp/archive/v2.2.0.tar.gz -O libsrtp-2.2.0.tar.gz && tar xfv libsrtp-2.2.0.tar.gz
+run cd /root/libsrtp-2.2.0 && ./configure --prefix=/usr --enable-openssl && make shared_library && make install
+run cd /root && git clone https://github.com/sctplab/usrsctp && cd usrsctp && ./bootstrap && ./configure --prefix=/usr && make && make install
+run git clone https://github.com/meetecho/janus-gateway.git /root/janus-gateway && cd /root/janus-gateway && git checkout v0.7.4
+run cd /root/janus-gateway && ./autogen.sh && ./configure --prefix=/opt/janus --enable-post-processing --disable-docs --disable-plugin-lua && make && make install 
+run cd /root/janus-gateway && make configs
+
+run pip3 install gdbgui
+
+run apt-get clean && apt-get autoclean && apt-get autoremove
+
+run rm -rf /var/www/html
+run ln -s /root/janus-gateway/html /var/www/html
+
+expose 8088
+cmd /opt/janus/bin/janus --stun-server=stun.l.google.com:19302 --rtp-port-range=9000-9020

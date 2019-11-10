@@ -1,0 +1,9 @@
+body {
+  font-family: Helvetica Neue;
+}
+
+:root {
+  --cover-background-color: #0067B5;
+  --cover-background-blend-mode: normal;
+  --cover-heading-font-weight: 500;
+}

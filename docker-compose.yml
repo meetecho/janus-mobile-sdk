@@ -1,0 +1,57 @@
+version: '3.7'
+
+services:
+  docs:
+    image: 'nginx:1.17.4-alpine'
+    ports:
+      - '8080:80'
+    volumes:
+      - './docs:/usr/share/nginx/html:ro'
+
+  janus:
+    image: 'helloiampau/janus:0.7.4'
+    build:
+      context: '.'
+      dockerfile: 'Dockerfile.janus'
+    security_opt:
+      - 'seccomp:unconfined'
+    ports:
+      - "8088:8088"
+      - "8188:8188"
+      - "5000:5000"
+      - "9000-9020:9000-9020/udp"
+    command: "/opt/janus/bin/janus --stun-server=stun.l.google.com:19302 --rtp-port-range=9000-9020 --nat-1-1=10.0.2.2"
+  httpbin:
+    image: 'kennethreitz/httpbin'
+  https:
+    image: 'outrigger/https-proxy:1.0'
+    depends_on:
+      - 'httpbin'
+    environment:
+      UPSTREAM_DOMAIN: 'httpbin'
+      UPSTREAM_PORT: 80
+      PROXY_DOMAIN: 'https'
+  test:
+    depends_on:
+      - 'httpbin'
+      - 'https'
+      - 'janus'
+    security_opt:
+      - 'seccomp:unconfined'
+    build:
+      context: '.'
+    image: 'janus-client/test'
+    ports:
+      - '5001:5000'
+    volumes:
+      - './CMakeLists.txt:/app/CMakeLists.txt:ro'
+      # - './CPPLINT.cfg:/app/CPPLINT.cfg:ro'
+      - './Makefile:/app/Makefile:ro'
+      # - './codecov.yml:/app/codecov.yml:ro'
+      - './include/:/app/include/'
+      - './janus-client.djinni:/app/janus-client.djinni:ro'
+      - './src/:/app/src/'
+      - './test/:/app/test/'
+      - './generated/:/app/generated/'
+      - './third_party/:/app/third_party/'
+    command: bash -c 'mkdir -p /app/build && cd /app && cd build && cmake .. && while inotifywait -r -e create ../src ../test ../include/janus --exclude ''\\.o$$''; do  cmake .. && make janus_tests && ./janus_tests; done'

@@ -1,0 +1,191 @@
+sdp_constraints = record {
+  send_audio: bool;
+  send_video: bool;
+  receive_audio: bool;
+  receive_video: bool;
+  datachannel: bool;
+}
+
+camera = enum {
+  FRONT;
+  OTHER;
+}
+
+video_constraints = record {
+  width: i32;
+  height: i32;
+  fps: i32;
+  camera: camera;
+}
+
+constraints = record {
+  sdp: sdp_constraints;
+  video: video_constraints;
+}
+
+constraints_builder = interface +c {
+  datachannel(enable: bool): constraints_builder;
+  send_audio(enable: bool): constraints_builder;
+  send_video(enable: bool): constraints_builder;
+  receive_audio(enable: bool): constraints_builder;
+  receive_video(enable: bool): constraints_builder;
+  camera(camera: camera): constraints_builder;
+
+  video(width: i32, height: i32, fps: i32): constraints_builder;
+
+  send_only(): constraints_builder;
+  receive_only(): constraints_builder;
+  none(): constraints_builder;
+
+  build(): constraints;
+
+  static create(): constraints_builder;
+}
+
+jsep = interface +c {
+  type(): sdp_type;
+  sdp(): string;
+}
+
+janus_data = interface +c {
+  getString(key: string, fallback: string): string;
+  getInt(key: string, fallback: i64): i64;
+  getBool(key: string, fallback: bool): bool;
+  getObject(key: string): janus_data;
+  getList(key: string): list<janus_data>;
+}
+
+janus_event = interface +c {
+  jsep(): jsep;
+  data(): janus_data;
+}
+
+plugin = interface +c +j +o {
+  onEvent(event: janus_event, context: bundle);
+  onHangup(reason: string);
+  onClose();
+  command(command: string, payload: bundle);
+
+  onOffer(sdp: string, context: bundle);
+  onAnswer(sdp: string, context: bundle);
+}
+
+plugin_factory = interface +c +j +o {
+  create(owner: protocol): plugin;
+}
+
+sdp_type = enum {
+  OFFER;
+  ANSWER;
+}
+
+peer = interface +c +j +o {
+  createOffer(constraints: constraints, context: bundle);
+  createAnswer(constraints: constraints, context: bundle);
+  setLocalDescription(type: sdp_type, sdp: string);
+  setRemoteDescription(type: sdp_type, sdp: string);
+  addIceCandidate(mid: string, index: i32, sdp: string);
+  close();
+}
+
+peer_factory = interface +c +j +o {
+  create(id: i64, owner: protocol): peer;
+}
+
+janus_plugins = record {
+  const ECHO_TEST: string = "janus.plugin.echotest";
+  const STREAMING: string = "janus.plugin.streaming";
+  const VIDEOROOM: string = "janus.plugin.videoroom";
+}
+
+janus_commands = record {
+  const CALL: string = "13Q3wnLuN7";
+  const UPDATE: string = "nOigt76Vb3";
+  const LIST: string = "EhugLy7lgh";
+  const LISTPARTICIPANTS: string = "WYFIUhYcHf";
+  const INFO: string = "x4ELZYsCTl";
+  const PUBLISH: string = "uL52vhlgEB";
+  const SUBSCRIBE: string = "TzSW9zCWDl";
+  const WATCH: string = "L3R2jtDinc";
+  const START: string = "gN7qHnIyB8";
+  const PAUSE: string = "zlQfaZO2rZ";
+  const STOP: string = "uSYwffonCO";
+  const JOIN: string = "YleGo5pJm9";
+
+  const ATTACH: string = "attach";
+  const CREATE: string = "create";
+  const DESTROY: string = "destroy";
+  const TRICKLE: string = "trickle";
+  const TRICKLE_COMPLETED: string = "trickle_completed";
+  const HANGUP: string = "hangup";
+}
+
+janus_p_types = record {
+  const PUBLISHER: string = "publisher";
+  const SUBSCRIBER: string = "subscriber";
+}
+
+platform = interface +c {
+  protocol(protocol: protocol);
+  pluginFactory(id: string, factory: plugin_factory);
+
+  static create(factory: peer_factory): platform;
+}
+
+janus_conf = interface +j +o +c {
+  url(): string;
+  plugin(): string;
+}
+
+janus_error = record {
+  code: i64;
+  message: string;
+}
+
+protocol_delegate = interface +j +o +c {
+  onReady();
+  onClose();
+
+  onError(error: janus_error, context: bundle);
+
+  onEvent(event: janus_event, context: bundle);
+
+  onHangup(reason: string);
+}
+
+bundle = interface +c {
+  setString(key: string, value: string);
+  getString(key: string, fallback: string): string;
+  setInt(key: string, value: i64);
+  getInt(key: string, fallback: i64): i64;
+  setBool(key: string, value: bool);
+  getBool(key: string, fallback: bool): bool;
+  setConstraints(constraints: constraints);
+  getConstraints(): constraints;
+
+  static create(): bundle;
+}
+
+protocol = interface +j +o +c {
+  name(): string;
+
+  init(conf: janus_conf, platform: platform, delegate: protocol_delegate);
+
+  dispatch(command: string, payload: bundle);
+  hangup();
+  close();
+
+  onOffer(sdp: string, context: bundle);
+  onAnswer(sdp: string, context: bundle);
+  onIceCandidate(mid: string, index: i32, sdp: string, context: bundle);
+  onIceCompleted(context: bundle);
+}
+
+janus = interface +c {
+  init();
+  close();
+  hangup();
+  dispatch(command: string, payload: bundle);
+
+  static create(conf: janus_conf, platform: platform, delegate: protocol_delegate): janus;
+}
