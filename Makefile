@@ -39,6 +39,9 @@ clean_tests: clean_lib
 valgrind: clean_tests
 	cd build && cmake .. && make janus_tests && valgrind --error-exitcode=29 --leak-check=full --show-leak-kinds=all --show-reachable=yes ./janus_tests
 
+test: clean_tests
+	cd build && cmake .. && make janus_tests && ./janus_tests
+
 thread_test: clean_tests
 	cd build && cmake -DEXTRA_TEST="THREADS" .. && make janus_tests && ./janus_tests
 
@@ -51,4 +54,4 @@ coverage: clean_tests
 debugger:
 	gdbgui --host 0.0.0.0 build/janus_tests
 
-.PHONY: all mbedtls curl djinni googletest deps gluecode clean_lib clean_tests memory_test thread_test coverage debugger json googletest_bundle
+.PHONY: all mbedtls curl djinni googletest deps gluecode clean_lib clean_tests memory_test thread_test coverage debugger json googletest_bundle test

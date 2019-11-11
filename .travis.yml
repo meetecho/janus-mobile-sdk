@@ -1,0 +1,34 @@
+jobs:
+  include:
+    - stage: test native
+      language: cpp
+      before_install:
+        - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+        - sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+        - sudo apt-get update
+        - sudo apt-get -y -o Dpkg::Options::="--force-confnew" install docker-ce default-jdk
+        - sudo rm /usr/local/bin/docker-compose
+        - curl -L https://github.com/docker/compose/releases/download/1.23.2/docker-compose-`uname -s`-`uname -m` > docker-compose
+        - chmod +x docker-compose
+        - sudo mv docker-compose /usr/local/bin
+        - curl -L --create-dirs -o $HOME/.sbt/launchers/1.0.2/sbt-launch.jar http://dl.bintray.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/1.0.2/sbt-launch.jar
+        - docker-compose -p janus up --build -d
+        - export TEST_SERVICE=$(docker ps -q --filter label=com.docker.compose.project=janus --filter label=com.docker.compose.service=test)
+      install:
+        - docker exec -t -i -w /app $TEST_SERVICE make || exit 1
+      script:
+        - docker exec -t -i -w /app $TEST_SERVICE make test || exit 1
+    - stage: test android
+      language: android
+      sudo: true
+      android:
+        components:
+          - build-tools-28.0.3
+          - android-28
+      before_install:
+        - curl -L --create-dirs -o $HOME/.sbt/launchers/1.0.2/sbt-launch.jar http://dl.bintray.com/typesafe/ivy-releases/org.scala-sbt/sbt-launch/1.0.2/sbt-launch.jar
+        - echo y | sdkmanager 'ndk-bundle'
+      install:
+        - make
+      script:
+        - cd platforms/android && ./gradlew janus:test

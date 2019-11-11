@@ -55,7 +55,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ SurfaceTextureHelper.class, PeerImpl.class })
+@PrepareForTest({ SurfaceTextureHelper.class, PeerImpl.class, Bundle.class })
 public class PeerImplTest {
 
   private JanusConf _conf;
@@ -83,6 +83,8 @@ public class PeerImplTest {
   private MutableMediaBundle _mediaBundle;
   private DataChannel _dataChannel;
   private DataChannel.Init _dataChannelInit;
+
+  private Bundle _bundle;
 
   @Before
   public void beforeEach() throws Exception {
@@ -168,6 +170,10 @@ public class PeerImplTest {
 
     this._mediaBundle = mock(MutableMediaBundle.class);
     whenNew(MutableMediaBundle.class).withNoArguments().thenReturn(this._mediaBundle);
+
+    this._bundle = mock(Bundle.class);
+    mockStatic(Bundle.class);
+    when(Bundle.create()).thenReturn(this._bundle);
   }
 
   @Test
@@ -417,7 +423,7 @@ public class PeerImplTest {
     IceCandidate candidate = new IceCandidate("yolo", 420, "the line");
     pc.onIceCandidate(candidate);
 
-    verify(this._owner).onIceCandidate("yolo", 420, "the line");
+    verify(this._owner).onIceCandidate("yolo", 420, "the line", this._bundle);
   }
 
   @Test
@@ -425,7 +431,7 @@ public class PeerImplTest {
     PeerImpl pc = new PeerImpl(-1, this._conf, this._owner, this._delegate, this._appContext, this._pcFactory, this._cameraEnumerator, this._eglBase);
     pc.onIceGatheringChange(PeerConnection.IceGatheringState.COMPLETE);
 
-    verify(this._owner, times(1)).onIceCompleted();
+    verify(this._owner, times(1)).onIceCompleted(this._bundle);
   }
 
   @Test
@@ -434,7 +440,7 @@ public class PeerImplTest {
     pc.onIceGatheringChange(PeerConnection.IceGatheringState.NEW);
     pc.onIceGatheringChange(PeerConnection.IceGatheringState.GATHERING);
 
-    verify(this._owner, times(0)).onIceCompleted();
+    verify(this._owner, times(0)).onIceCompleted(any(Bundle.class));
   }
 
 
