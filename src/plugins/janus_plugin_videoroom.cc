@@ -122,7 +122,7 @@ namespace Janus {
     }
 
     if(command == JanusCommands::PUBLISH) {
-      this->_peer = this->_peerFactory->create(-1, this->_owner);
+      this->_peer = this->_peerFactory->create(this->_handleId, this->_owner);
 
       auto constraints = payload->getConstraints();
 
@@ -158,7 +158,12 @@ namespace Janus {
 
     if(data->getString("janus", "") == "success" && context->getString("command", "") == "attach") {
       auto subscriberId = data->getObject("data")->getInt("id", -1);
-      context->setInt("subscriberId", subscriberId);
+
+      auto peer = this->_peerFactory->create(subscriberId, this->_owner);
+      auto subscriber = std::make_shared<Subscriber>(peer, context);
+      this->_subscribers[subscriberId] = subscriber;
+
+      context->setInt("handleId", subscriberId);
 
       auto offer_audio = context->getBool("offer_audio", true);
       auto offer_video = context->getBool("offer_video", true);
@@ -173,21 +178,23 @@ namespace Janus {
     }
 
     if(data->getString("videoroom", "") == "attached" && jsep != nullptr) {
-      auto subscriberId = context->getInt("subscriberId", -1);
-      auto subscriber = this->_peerFactory->create(subscriberId, this->_owner);
+      auto subscriberId = event->sender();
+      auto subscriber = this->_subscribers[subscriberId];
 
-      this->_subscribers[subscriberId] = subscriber;
+      auto peer = subscriber->peer;
 
-      subscriber->setRemoteDescription(jsep->type(), jsep->sdp());
+      peer->setRemoteDescription(jsep->type(), jsep->sdp());
 
-      auto constraints = context->getConstraints();
+      auto subscriberContext = subscriber->context;
+
+      auto constraints = subscriberContext->getConstraints();
       constraints.sdp.send_audio = false;
       constraints.sdp.send_video = false;
-      constraints.sdp.receive_audio = context->getBool("offer_audio", true);
-      constraints.sdp.receive_video = context->getBool("offer_video", true);
-      constraints.sdp.datachannel = context->getBool("offer_data", true);
+      constraints.sdp.receive_audio = subscriberContext->getBool("offer_audio", true);
+      constraints.sdp.receive_video = subscriberContext->getBool("offer_video", true);
+      constraints.sdp.datachannel = subscriberContext->getBool("offer_data", true);
 
-      subscriber->createAnswer(constraints, context);
+      peer->createAnswer(constraints, subscriberContext);
 
       return;
     }
@@ -207,11 +214,12 @@ namespace Janus {
   }
 
   void JanusPluginVideoroom::onAnswer(const std::string& sdp, const std::shared_ptr<Bundle>& context) {
-    auto subscriberId = context->getInt("subscriberId", -1);
+    auto subscriberId = context->getInt("handleId", -1);
     auto subscriber = this->_subscribers[subscriberId];
 
-    subscriber->setLocalDescription(SdpType::ANSWER, sdp);
-    
+    auto peer = subscriber->peer;
+    peer->setLocalDescription(SdpType::ANSWER, sdp);
+
     auto msg = Messages::start(sdp);
     this->_delegate->onCommandResult(msg, context);
   }
@@ -221,8 +229,8 @@ namespace Janus {
     this->_delegate = delegate;
   }
 
-  std::shared_ptr<Plugin> JanusPluginVideoroomFactory::create(const std::shared_ptr<Protocol>& owner) {
-    auto plugin = std::make_shared<JanusPluginVideoroom>(this->_delegate, this->_peerFactory, owner);
+  std::shared_ptr<Plugin> JanusPluginVideoroomFactory::create(int64_t handleId, const std::shared_ptr<Protocol>& owner) {
+    auto plugin = std::make_shared<JanusPluginVideoroom>(handleId, this->_delegate, this->_peerFactory, owner);
 
     return plugin;
   }

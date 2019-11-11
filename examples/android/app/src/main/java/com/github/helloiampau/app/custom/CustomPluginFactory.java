@@ -7,8 +7,7 @@ import com.github.helloiampau.janus.generated.Protocol;
 public class CustomPluginFactory extends PluginFactory {
 
   @Override
-  public Plugin create(Protocol owner) {
+  public Plugin create(long handleId, Protocol owner) {
     return new CustomPlugin();
   }
-
 }

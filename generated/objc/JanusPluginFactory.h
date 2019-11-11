@@ -8,6 +8,7 @@
 
 @protocol JanusPluginFactory
 
-- (nullable id<JanusPlugin>)create:(nullable id<JanusProtocol>)owner;
+- (nullable id<JanusPlugin>)create:(int64_t)handleId
+                             owner:(nullable id<JanusProtocol>)owner;
 
 @end

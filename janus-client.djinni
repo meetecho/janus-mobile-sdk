@@ -56,6 +56,7 @@ janus_data = interface +c {
 }
 
 janus_event = interface +c {
+  sender(): i64;
   jsep(): jsep;
   data(): janus_data;
 }
@@ -71,7 +72,7 @@ plugin = interface +c +j +o {
 }
 
 plugin_factory = interface +c +j +o {
-  create(owner: protocol): plugin;
+  create(handleId: i64, owner: protocol): plugin;
 }
 
 sdp_type = enum {
@@ -177,8 +178,8 @@ protocol = interface +j +o +c {
 
   onOffer(sdp: string, context: bundle);
   onAnswer(sdp: string, context: bundle);
-  onIceCandidate(mid: string, index: i32, sdp: string, context: bundle);
-  onIceCompleted(context: bundle);
+  onIceCandidate(mid: string, index: i32, sdp: string, id: i64);
+  onIceCompleted(id: i64);
 }
 
 janus = interface +c {

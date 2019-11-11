@@ -26,7 +26,7 @@ namespace Janus {
 
   void JanusPluginEchotest::command(const std::string& command, const std::shared_ptr<Bundle>& payload) {
     if(command == JanusCommands::CALL) {
-      this->_peer = this->_peerFactory->create(-1, this->_owner);
+      this->_peer = this->_peerFactory->create(this->_handleId, this->_owner);
       auto constraints = payload->getConstraints();
 
       constraints.sdp.send_audio = constraints.sdp.receive_audio = payload->getBool("audio", true);
@@ -70,8 +70,8 @@ namespace Janus {
     this->_delegate = delegate;
   }
 
-  std::shared_ptr<Plugin> JanusPluginEchotestFactory::create(const std::shared_ptr<Protocol>& owner) {
-    auto plugin = std::make_shared<JanusPluginEchotest>(this->_delegate, this->_peerFactory, owner);
+  std::shared_ptr<Plugin> JanusPluginEchotestFactory::create(int64_t handleId, const std::shared_ptr<Protocol>& owner) {
+    auto plugin = std::make_shared<JanusPluginEchotest>(handleId, this->_delegate, this->_peerFactory, owner);
 
     return plugin;
   }

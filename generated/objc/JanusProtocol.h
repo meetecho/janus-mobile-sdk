@@ -32,8 +32,8 @@
 - (void)onIceCandidate:(nonnull NSString *)mid
                  index:(int32_t)index
                    sdp:(nonnull NSString *)sdp
-               context:(nullable JanusBundle *)context;
+                    id:(int64_t)id;
 
-- (void)onIceCompleted:(nullable JanusBundle *)context;
+- (void)onIceCompleted:(int64_t)id;
 
 @end

@@ -40,8 +40,8 @@ private:
         void close() override;
         void onOffer(const std::string & sdp, const std::shared_ptr<::Janus::Bundle> & context) override;
         void onAnswer(const std::string & sdp, const std::shared_ptr<::Janus::Bundle> & context) override;
-        void onIceCandidate(const std::string & mid, int32_t index, const std::string & sdp, const std::shared_ptr<::Janus::Bundle> & context) override;
-        void onIceCompleted(const std::shared_ptr<::Janus::Bundle> & context) override;
+        void onIceCandidate(const std::string & mid, int32_t index, const std::string & sdp, int64_t id) override;
+        void onIceCompleted(int64_t id) override;
 
     private:
         friend ::djinni::JniInterface<::Janus::Protocol, ::djinni_generated::NativeProtocol>;
@@ -55,8 +55,8 @@ private:
     const jmethodID method_close { ::djinni::jniGetMethodID(clazz.get(), "close", "()V") };
     const jmethodID method_onOffer { ::djinni::jniGetMethodID(clazz.get(), "onOffer", "(Ljava/lang/String;Lcom/github/helloiampau/janus/generated/Bundle;)V") };
     const jmethodID method_onAnswer { ::djinni::jniGetMethodID(clazz.get(), "onAnswer", "(Ljava/lang/String;Lcom/github/helloiampau/janus/generated/Bundle;)V") };
-    const jmethodID method_onIceCandidate { ::djinni::jniGetMethodID(clazz.get(), "onIceCandidate", "(Ljava/lang/String;ILjava/lang/String;Lcom/github/helloiampau/janus/generated/Bundle;)V") };
-    const jmethodID method_onIceCompleted { ::djinni::jniGetMethodID(clazz.get(), "onIceCompleted", "(Lcom/github/helloiampau/janus/generated/Bundle;)V") };
+    const jmethodID method_onIceCandidate { ::djinni::jniGetMethodID(clazz.get(), "onIceCandidate", "(Ljava/lang/String;ILjava/lang/String;J)V") };
+    const jmethodID method_onIceCompleted { ::djinni::jniGetMethodID(clazz.get(), "onIceCompleted", "(J)V") };
 };
 
 }  // namespace djinni_generated

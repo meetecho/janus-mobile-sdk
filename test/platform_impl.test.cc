@@ -39,7 +39,7 @@ namespace Janus {
     auto owner = std::make_shared<NiceMock<ProtocolMock>>();
 
     auto platform = std::make_shared<PlatformImplImpl>(peerFactory);
-    platform->plugin(JanusPlugins::STREAMING, owner);
+    platform->plugin(JanusPlugins::STREAMING, 69, owner);
   }
 
   TEST_F(PlatformImplTest, shouldRegisterTheVideoroomFactory) {
@@ -47,7 +47,7 @@ namespace Janus {
     auto owner = std::make_shared<NiceMock<ProtocolMock>>();
 
     auto platform = std::make_shared<PlatformImplImpl>(peerFactory);
-    platform->plugin(JanusPlugins::VIDEOROOM, owner);
+    platform->plugin(JanusPlugins::VIDEOROOM, 69, owner);
   }
 
   TEST_F(PlatformImplTest, shouldRegisterTheEchotestFactory) {
@@ -55,7 +55,7 @@ namespace Janus {
     auto owner = std::make_shared<NiceMock<ProtocolMock>>();
 
     auto platform = std::make_shared<PlatformImplImpl>(peerFactory);
-    platform->plugin(JanusPlugins::ECHO_TEST, owner);
+    platform->plugin(JanusPlugins::ECHO_TEST, 69, owner);
   }
 
   class PlatformTest : public testing::Test {
