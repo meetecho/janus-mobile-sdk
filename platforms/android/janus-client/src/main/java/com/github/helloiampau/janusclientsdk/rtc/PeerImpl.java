@@ -296,10 +296,7 @@ public class PeerImpl extends Peer implements PeerConnection.Observer, DataChann
 
   @Override
   public void onIceCandidate(IceCandidate iceCandidate) {
-    Bundle bundle = Bundle.create();
-    bundle.setInt("id", this._id);
-
-    this._owner.onIceCandidate(iceCandidate.sdpMid, iceCandidate.sdpMLineIndex, iceCandidate.sdp, bundle);
+    this._owner.onIceCandidate(iceCandidate.sdpMid, iceCandidate.sdpMLineIndex, iceCandidate.sdp, this._id);
   }
 
   @Override
@@ -308,10 +305,7 @@ public class PeerImpl extends Peer implements PeerConnection.Observer, DataChann
       return;
     }
 
-    Bundle bundle = Bundle.create();
-    bundle.setInt("id", this._id);
-
-    this._owner.onIceCompleted(bundle);
+    this._owner.onIceCompleted(this._id);
   }
 
   @Override

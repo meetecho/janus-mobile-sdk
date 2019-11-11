@@ -5,6 +5,7 @@
 #import "JanusJanusEvent.h"
 #import "DJICppWrapperCache+Private.h"
 #import "DJIError.h"
+#import "DJIMarshal+Private.h"
 #import "JanusJanusData+Private.h"
 #import "JanusJsep+Private.h"
 #include <exception>
@@ -29,6 +30,13 @@ static_assert(__has_feature(objc_arc), "Djinni requires ARC to be enabled for th
         _cppRefHandle.assign(cppRef);
     }
     return self;
+}
+
+- (int64_t)sender {
+    try {
+        auto objcpp_result_ = _cppRefHandle.get()->sender();
+        return ::djinni::I64::fromCpp(objcpp_result_);
+    } DJINNI_TRANSLATE_EXCEPTIONS()
 }
 
 - (nullable JanusJsep *)jsep {

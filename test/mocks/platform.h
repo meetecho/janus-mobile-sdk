@@ -10,7 +10,7 @@ namespace Janus {
       MOCK_METHOD0(protocol, std::shared_ptr<Protocol>());
 
       MOCK_METHOD2(pluginFactory, void(const std::string& id, const std::shared_ptr<PluginFactory>& factory));
-      MOCK_METHOD2(plugin, std::shared_ptr<Plugin>(const std::string& id, const std::shared_ptr<Protocol>& owner));
+      MOCK_METHOD3(plugin, std::shared_ptr<Plugin>(const std::string& id, int64_t handleId, const std::shared_ptr<Protocol>& owner));
   };
 
 }

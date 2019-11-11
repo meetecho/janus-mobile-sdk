@@ -77,7 +77,7 @@ void NativeProtocol::JavaProxy::onAnswer(const std::string & c_sdp, const std::s
                            ::djinni::get(::djinni_generated::NativeBundle::fromCpp(jniEnv, c_context)));
     ::djinni::jniExceptionCheck(jniEnv);
 }
-void NativeProtocol::JavaProxy::onIceCandidate(const std::string & c_mid, int32_t c_index, const std::string & c_sdp, const std::shared_ptr<::Janus::Bundle> & c_context) {
+void NativeProtocol::JavaProxy::onIceCandidate(const std::string & c_mid, int32_t c_index, const std::string & c_sdp, int64_t c_id) {
     auto jniEnv = ::djinni::jniGetThreadEnv();
     ::djinni::JniLocalScope jscope(jniEnv, 10);
     const auto& data = ::djinni::JniClass<::djinni_generated::NativeProtocol>::get();
@@ -85,15 +85,15 @@ void NativeProtocol::JavaProxy::onIceCandidate(const std::string & c_mid, int32_
                            ::djinni::get(::djinni::String::fromCpp(jniEnv, c_mid)),
                            ::djinni::get(::djinni::I32::fromCpp(jniEnv, c_index)),
                            ::djinni::get(::djinni::String::fromCpp(jniEnv, c_sdp)),
-                           ::djinni::get(::djinni_generated::NativeBundle::fromCpp(jniEnv, c_context)));
+                           ::djinni::get(::djinni::I64::fromCpp(jniEnv, c_id)));
     ::djinni::jniExceptionCheck(jniEnv);
 }
-void NativeProtocol::JavaProxy::onIceCompleted(const std::shared_ptr<::Janus::Bundle> & c_context) {
+void NativeProtocol::JavaProxy::onIceCompleted(int64_t c_id) {
     auto jniEnv = ::djinni::jniGetThreadEnv();
     ::djinni::JniLocalScope jscope(jniEnv, 10);
     const auto& data = ::djinni::JniClass<::djinni_generated::NativeProtocol>::get();
     jniEnv->CallVoidMethod(Handle::get().get(), data.method_onIceCompleted,
-                           ::djinni::get(::djinni_generated::NativeBundle::fromCpp(jniEnv, c_context)));
+                           ::djinni::get(::djinni::I64::fromCpp(jniEnv, c_id)));
     ::djinni::jniExceptionCheck(jniEnv);
 }
 
@@ -174,7 +174,7 @@ CJNIEXPORT void JNICALL Java_com_github_helloiampau_janus_generated_Protocol_000
     } JNI_TRANSLATE_EXCEPTIONS_RETURN(jniEnv, )
 }
 
-CJNIEXPORT void JNICALL Java_com_github_helloiampau_janus_generated_Protocol_00024CppProxy_native_1onIceCandidate(JNIEnv* jniEnv, jobject /*this*/, jlong nativeRef, jstring j_mid, jint j_index, jstring j_sdp, jobject j_context)
+CJNIEXPORT void JNICALL Java_com_github_helloiampau_janus_generated_Protocol_00024CppProxy_native_1onIceCandidate(JNIEnv* jniEnv, jobject /*this*/, jlong nativeRef, jstring j_mid, jint j_index, jstring j_sdp, jlong j_id)
 {
     try {
         DJINNI_FUNCTION_PROLOGUE1(jniEnv, nativeRef);
@@ -182,16 +182,16 @@ CJNIEXPORT void JNICALL Java_com_github_helloiampau_janus_generated_Protocol_000
         ref->onIceCandidate(::djinni::String::toCpp(jniEnv, j_mid),
                             ::djinni::I32::toCpp(jniEnv, j_index),
                             ::djinni::String::toCpp(jniEnv, j_sdp),
-                            ::djinni_generated::NativeBundle::toCpp(jniEnv, j_context));
+                            ::djinni::I64::toCpp(jniEnv, j_id));
     } JNI_TRANSLATE_EXCEPTIONS_RETURN(jniEnv, )
 }
 
-CJNIEXPORT void JNICALL Java_com_github_helloiampau_janus_generated_Protocol_00024CppProxy_native_1onIceCompleted(JNIEnv* jniEnv, jobject /*this*/, jlong nativeRef, jobject j_context)
+CJNIEXPORT void JNICALL Java_com_github_helloiampau_janus_generated_Protocol_00024CppProxy_native_1onIceCompleted(JNIEnv* jniEnv, jobject /*this*/, jlong nativeRef, jlong j_id)
 {
     try {
         DJINNI_FUNCTION_PROLOGUE1(jniEnv, nativeRef);
         const auto& ref = ::djinni::objectFromHandleAddress<::Janus::Protocol>(nativeRef);
-        ref->onIceCompleted(::djinni_generated::NativeBundle::toCpp(jniEnv, j_context));
+        ref->onIceCompleted(::djinni::I64::toCpp(jniEnv, j_id));
     } JNI_TRANSLATE_EXCEPTIONS_RETURN(jniEnv, )
 }
 

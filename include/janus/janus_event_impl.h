@@ -47,13 +47,15 @@ namespace Janus {
 
   class JanusEventImpl : public JanusEvent {
     public:
-      JanusEventImpl(const nlohmann::json& body);
-      JanusEventImpl(const nlohmann::json& body, const nlohmann::json& sdp);
+      JanusEventImpl(int64_t sender, const nlohmann::json& body);
+      JanusEventImpl(int64_t sender, const nlohmann::json& body, const nlohmann::json& sdp);
 
+      int64_t sender();
       std::shared_ptr<Jsep> jsep();
       std::shared_ptr<JanusData> data();
 
     private:
+      int64_t _sender = -1;
       std::shared_ptr<JanusDataImpl> _content;
       std::shared_ptr<Jsep> _jsep = nullptr;
   };

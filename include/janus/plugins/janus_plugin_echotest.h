@@ -20,7 +20,7 @@ namespace Janus {
 
   class JanusPluginEchotest : public JanusPlugin {
     public:
-      JanusPluginEchotest(const std::shared_ptr<PluginCommandDelegate>& delegate, const std::shared_ptr<PeerFactory>& peerFactory, const std::shared_ptr<Protocol>& owner) : JanusPlugin(delegate, peerFactory, owner) {}
+      JanusPluginEchotest(int64_t handleId, const std::shared_ptr<PluginCommandDelegate>& delegate, const std::shared_ptr<PeerFactory>& peerFactory, const std::shared_ptr<Protocol>& owner) : JanusPlugin(handleId, delegate, peerFactory, owner) {}
       void command(const std::string& command, const std::shared_ptr<Bundle>& payload);
       void onEvent(const std::shared_ptr<JanusEvent>& event, const std::shared_ptr<Bundle>& context);
       void onOffer(const std::string& sdp, const std::shared_ptr<Bundle>& context);
@@ -35,7 +35,7 @@ namespace Janus {
     public:
       JanusPluginEchotestFactory(const std::shared_ptr<PluginCommandDelegate>& delegate, const std::shared_ptr<PeerFactory>& peerFactory);
 
-      std::shared_ptr<Plugin> create(const std::shared_ptr<Protocol>& owner);
+      std::shared_ptr<Plugin> create(int64_t handleId, const std::shared_ptr<Protocol>& owner);
 
     private:
       std::shared_ptr<PeerFactory> _peerFactory;

@@ -6,6 +6,8 @@ package com.github.helloiampau.janus.generated;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class JanusEvent {
+    public abstract long sender();
+
     public abstract Jsep jsep();
 
     public abstract JanusData data();
@@ -32,6 +34,14 @@ public abstract class JanusEvent {
             _djinni_private_destroy();
             super.finalize();
         }
+
+        @Override
+        public long sender()
+        {
+            assert !this.destroyed.get() : "trying to use a destroyed object";
+            return native_sender(this.nativeRef);
+        }
+        private native long native_sender(long _nativeRef);
 
         @Override
         public Jsep jsep()

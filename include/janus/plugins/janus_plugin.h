@@ -20,12 +20,14 @@ namespace Janus {
 
   class JanusPlugin : public Plugin {
     public:
-      JanusPlugin(const std::shared_ptr<PluginCommandDelegate>& delegate, const std::shared_ptr<PeerFactory>& peerFactory, const std::shared_ptr<Protocol>& owner);
+      JanusPlugin(int64_t handleId, const std::shared_ptr<PluginCommandDelegate>& delegate, const std::shared_ptr<PeerFactory>& peerFactory, const std::shared_ptr<Protocol>& owner);
       void onHangup(const std::string& reason);
       void onClose();
 
     protected:
       std::shared_ptr<Peer> _peer;
+
+      int64_t _handleId = -1;
 
       std::shared_ptr<Protocol> _owner;
       std::shared_ptr<PeerFactory> _peerFactory;

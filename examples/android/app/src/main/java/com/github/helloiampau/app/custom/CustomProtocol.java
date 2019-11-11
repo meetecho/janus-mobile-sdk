@@ -44,12 +44,12 @@ public class CustomProtocol extends Protocol {
   }
 
   @Override
-  public void onIceCandidate(String mid, int index, String sdp) {
+  public void onIceCandidate(String mid, int index, String sdp, long id) {
 
   }
 
   @Override
-  public void onIceCompleted() {
+  public void onIceCompleted(long id) {
 
   }
 

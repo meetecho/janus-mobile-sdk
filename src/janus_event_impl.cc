@@ -4,12 +4,13 @@ namespace Janus {
 
   /* Januseventimpl */
 
-  JanusEventImpl::JanusEventImpl(const nlohmann::json& body) {
+  JanusEventImpl::JanusEventImpl(int64_t sender, const nlohmann::json& body) {
     auto content = std::make_shared<JanusDataImpl>(body);
     this->_content = content;
+    this->_sender = sender;
   }
 
-  JanusEventImpl::JanusEventImpl(const nlohmann::json& body, const nlohmann::json& sdp) : JanusEventImpl(body) {
+  JanusEventImpl::JanusEventImpl(int64_t sender, const nlohmann::json& body, const nlohmann::json& sdp) : JanusEventImpl(sender, body) {
     auto jsep = std::make_shared<JsepImpl>(sdp);
     this->_jsep = jsep;
   }
@@ -20,6 +21,10 @@ namespace Janus {
 
   std::shared_ptr<Jsep> JanusEventImpl::jsep() {
     return this->_jsep;
+  }
+
+  int64_t JanusEventImpl::sender() {
+    return this->_sender;
   }
 
   /* JanusDataImpl */

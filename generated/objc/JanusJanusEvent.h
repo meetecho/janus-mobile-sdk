@@ -8,6 +8,8 @@
 
 @interface JanusJanusEvent : NSObject
 
+- (int64_t)sender;
+
 - (nullable JanusJsep *)jsep;
 
 - (nullable JanusJanusData *)data;

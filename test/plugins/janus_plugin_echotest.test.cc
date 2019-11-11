@@ -32,7 +32,7 @@ namespace Janus {
         this->_owner = std::make_shared<NiceMock<ProtocolMock>>();
 
         this->_peerFactory = std::make_shared<NiceMock<PeerFactoryMock>>();
-        ON_CALL(*this->_peerFactory, create(-1, Eq(this->_owner))).WillByDefault(Return(this->_peer));
+        ON_CALL(*this->_peerFactory, create(69, Eq(this->_owner))).WillByDefault(Return(this->_peer));
       }
 
       std::shared_ptr<NiceMock<PeerMock>> _peer;
@@ -48,7 +48,7 @@ namespace Janus {
     auto constraints = builder->build();
 
     EXPECT_CALL(*this->_peer, createOffer(HasConstraints(constraints), bundle)).Times(1);
-    auto plugin = std::make_shared<JanusPluginEchotest>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginEchotest>(69, this->_delegate, this->_peerFactory, this->_owner);
 
     plugin->command(JanusCommands::CALL, bundle);
   }
@@ -63,7 +63,7 @@ namespace Janus {
     auto constraints = builder->none()->build();
 
     EXPECT_CALL(*this->_peer, createOffer(HasConstraints(constraints), bundle)).Times(1);
-    auto plugin = std::make_shared<JanusPluginEchotest>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginEchotest>(69, this->_delegate, this->_peerFactory, this->_owner);
 
     plugin->command(JanusCommands::CALL, bundle);
   }
@@ -79,7 +79,7 @@ namespace Janus {
 
     EXPECT_CALL(*this->_delegate, onCommandResult(IsJsonEq(msg), updates));
 
-    auto plugin = std::make_shared<JanusPluginEchotest>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginEchotest>(69, this->_delegate, this->_peerFactory, this->_owner);
 
     auto bundle = Bundle::create();
     plugin->command(JanusCommands::CALL, bundle);
@@ -97,7 +97,7 @@ namespace Janus {
     auto context = Bundle::create();
 
     EXPECT_CALL(*this->_delegate, onCommandResult(IsJsonEq(msg), context));
-    auto plugin = std::make_shared<JanusPluginEchotest>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginEchotest>(69, this->_delegate, this->_peerFactory, this->_owner);
 
     auto bundle = Bundle::create();
     plugin->command(JanusCommands::CALL, bundle);
@@ -108,7 +108,7 @@ namespace Janus {
   TEST_F(JanusPluginEchotestTest, shouldSetTheOfferAsLocalDescription) {
     EXPECT_CALL(*this->_peer, setLocalDescription(SdpType::OFFER, "the sdp"));
 
-    auto plugin = std::make_shared<JanusPluginEchotest>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginEchotest>(69, this->_delegate, this->_peerFactory, this->_owner);
 
     auto bundle = Bundle::create();
     plugin->command(JanusCommands::CALL, bundle);
@@ -126,11 +126,11 @@ namespace Janus {
       { "sdp", "the sdp" }
     };
 
-    auto event = std::make_shared<JanusEventImpl>(data, jsep);
+    auto event = std::make_shared<JanusEventImpl>(69, data, jsep);
 
     auto bundle = Bundle::create();
 
-    auto plugin = std::make_shared<JanusPluginEchotest>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginEchotest>(69, this->_delegate, this->_peerFactory, this->_owner);
 
     plugin->command(JanusCommands::CALL, bundle);
 
@@ -139,7 +139,7 @@ namespace Janus {
 
   TEST_F(JanusPluginEchotestTest, shouldCloseThePeerOnHangup) {
     EXPECT_CALL(*this->_peer, close()).Times(1);
-    auto plugin = std::make_shared<JanusPluginEchotest>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginEchotest>(69, this->_delegate, this->_peerFactory, this->_owner);
 
     auto bundle = Bundle::create();
     plugin->command(JanusCommands::CALL, bundle);
@@ -147,13 +147,13 @@ namespace Janus {
   }
 
   TEST_F(JanusPluginEchotestTest, shouldAvoidSegFaultOnClose) {
-    auto plugin = std::make_shared<JanusPluginEchotest>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginEchotest>(69, this->_delegate, this->_peerFactory, this->_owner);
     plugin->onClose();
   }
 
   TEST_F(JanusPluginEchotestTest, shouldCleanupThePeerOnClose) {
     EXPECT_CALL(*this->_peer, close()).Times(1);
-    auto plugin = std::make_shared<JanusPluginEchotest>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginEchotest>(69, this->_delegate, this->_peerFactory, this->_owner);
 
     auto bundle = Bundle::create();
     plugin->command(JanusCommands::CALL, bundle);
@@ -162,10 +162,10 @@ namespace Janus {
 
   TEST_F(JanusPluginEchotestTest, shouldDelegateUnhandledEvents) {
     auto context = Bundle::create();
-    auto event = std::make_shared<JanusEventImpl>(nlohmann::json::object());
+    auto event = std::make_shared<JanusEventImpl>(69, nlohmann::json::object());
     EXPECT_CALL(*this->_delegate, onPluginEvent(Eq(event), Eq(context)));
 
-    auto plugin = std::make_shared<JanusPluginEchotest>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginEchotest>(69, this->_delegate, this->_peerFactory, this->_owner);
     plugin->onEvent(event, context);
   }
 
@@ -178,7 +178,7 @@ namespace Janus {
     auto delegate = std::make_shared<NiceMock<PluginCommandDelegateMock>>();
 
     auto factory = std::make_shared<JanusPluginEchotestFactory>(delegate, peerFactory);
-    EXPECT_NE(factory->create(owner), nullptr);
+    EXPECT_NE(factory->create(69, owner), nullptr);
   }
 
 }

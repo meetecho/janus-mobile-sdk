@@ -81,7 +81,7 @@ namespace Janus {
     auto jsep = event->jsep();
 
     if(jsep != nullptr) {
-      this->_peer = this->_peerFactory->create(-1, this->_owner);
+      this->_peer = this->_peerFactory->create(this->_handleId, this->_owner);
       this->_peer->setRemoteDescription(jsep->type(), jsep->sdp());
 
       auto constraints = this->_session->getConstraints();
@@ -111,8 +111,8 @@ namespace Janus {
     this->_delegate = delegate;
   }
 
-  std::shared_ptr<Plugin> JanusPluginStreamingFactory::create(const std::shared_ptr<Protocol>& owner) {
-    auto plugin = std::make_shared<JanusPluginStreaming>(this->_delegate, this->_peerFactory, owner);
+  std::shared_ptr<Plugin> JanusPluginStreamingFactory::create(int64_t handleId, const std::shared_ptr<Protocol>& owner) {
+    auto plugin = std::make_shared<JanusPluginStreaming>(handleId, this->_delegate, this->_peerFactory, owner);
 
     return plugin;
   }
