@@ -94,6 +94,7 @@ namespace Janus {
   void JanusApi::dispatch(const std::string& command, const std::shared_ptr<Bundle>& payload) {
     payload->setString("command", command);
     auto transaction = this->_random->generate();
+    auto handleId = this->handleId(payload);
 
     if(command == JanusCommands::CREATE) {
       auto msg = Messages::create(transaction);
@@ -116,7 +117,7 @@ namespace Janus {
     }
 
     if(command == JanusCommands::HANGUP) {
-      this->_transport->send(Messages::hangup(transaction, this->_handleId), payload);
+      this->_transport->send(Messages::hangup(transaction, handleId), payload);
 
       return;
     }
@@ -126,11 +127,6 @@ namespace Janus {
       auto sdpMLineIndex = payload->getInt("sdpMLineIndex", -1);
       auto candidate = payload->getString("candidate", "");
 
-      auto handleId = payload->getInt("id", -1);
-      if(handleId == -1) {
-        handleId = this->_handleId;
-      }
-
       auto msg = Messages::trickle(transaction, handleId, sdpMid, sdpMLineIndex, candidate);
       this->_transport->send(msg, payload);
 
@@ -138,11 +134,6 @@ namespace Janus {
     }
 
     if(command == JanusCommands::TRICKLE_COMPLETED) {
-      auto handleId = payload->getInt("id", -1);
-      if(handleId == -1) {
-        handleId = this->_handleId;
-      }
-
       auto msg = Messages::trickleCompleted(transaction, handleId);
       this->_transport->send(msg, payload);
 
@@ -198,7 +189,7 @@ namespace Janus {
       this->_handleId = message.value("data", nlohmann::json::object()).value("id", (int64_t) 0);
 
       auto pluginId = context->getString("plugin", "");
-      this->_plugin = this->_platform->plugin(pluginId, this->shared_from_this());
+      this->_plugin = this->_platform->plugin(pluginId, this->_handleId, this->shared_from_this());
 
       this->readyState(ReadyState::READY);
       this->_delegate->onReady();
@@ -223,22 +214,24 @@ namespace Janus {
       return;
     }
 
+    auto sender = message.value("sender", this->_handleId);
+
     if(header == "event") {
       auto data = message.value("plugindata", nlohmann::json::object()).value("data", nlohmann::json::object());
       auto jsep = message.value("jsep", nlohmann::json::object());
 
       std::shared_ptr<JanusEventImpl> evt;
       if(jsep.empty()) {
-        evt = std::make_shared<JanusEventImpl>(data);
+        evt = std::make_shared<JanusEventImpl>(sender, data);
       } else {
-        evt = std::make_shared<JanusEventImpl>(data, jsep);
+        evt = std::make_shared<JanusEventImpl>(sender, data, jsep);
       }
       this->_plugin->onEvent(evt, context);
 
       return;
     }
 
-    auto evt = std::make_shared<JanusEventImpl>(message);
+    auto evt = std::make_shared<JanusEventImpl>(sender, message);
 
     if(header == "success" && context->getString("command", "") == JanusCommands::ATTACH && this->_plugin != nullptr) {
       this->_plugin->onEvent(evt, context);
@@ -257,16 +250,21 @@ namespace Janus {
     this->_plugin->onAnswer(sdp, context);
   }
 
-  void JanusApi::onIceCandidate(const std::string& mid, int32_t index, const std::string& sdp, const std::shared_ptr<Bundle>& context) {
-    context->setString("sdpMid", mid);
-    context->setInt("sdpMLineIndex", index);
-    context->setString("candidate", sdp);
+  void JanusApi::onIceCandidate(const std::string& mid, int32_t index, const std::string& sdp, int64_t id) {
+    auto bundle = Bundle::create();
+    bundle->setString("sdpMid", mid);
+    bundle->setInt("sdpMLineIndex", index);
+    bundle->setString("candidate", sdp);
+    bundle->setInt("handleId", id);
 
-    this->dispatch(JanusCommands::TRICKLE, context);
+    this->dispatch(JanusCommands::TRICKLE, bundle);
   }
 
-  void JanusApi::onIceCompleted(const std::shared_ptr<Bundle>& context) {
-    this->dispatch(JanusCommands::TRICKLE_COMPLETED, context);
+  void JanusApi::onIceCompleted(int64_t id) {
+    auto bundle = Bundle::create();
+    bundle->setInt("handleId", id);
+
+    this->dispatch(JanusCommands::TRICKLE_COMPLETED, bundle);
   }
 
   ReadyState JanusApi::readyState() {
@@ -280,9 +278,13 @@ namespace Janus {
     this->_readyState = readyState;
   }
 
+  int64_t JanusApi::handleId(const std::shared_ptr<Bundle>& context) {
+    return context->getInt("handleId", this->_handleId);
+  }
+
   void JanusApi::onCommandResult(const nlohmann::json& body, const std::shared_ptr<Bundle>& context) {
     auto transaction = this->_random->generate();
-    auto handleId = context->getInt("subscriberId", this->_handleId);
+    auto handleId = this->handleId(context);
 
     auto message = Messages::message(transaction, handleId, body);
     this->_transport->send(message, context);

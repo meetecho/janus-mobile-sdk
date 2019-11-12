@@ -20,9 +20,9 @@ public abstract class Protocol {
 
     public abstract void onAnswer(String sdp, Bundle context);
 
-    public abstract void onIceCandidate(String mid, int index, String sdp, Bundle context);
+    public abstract void onIceCandidate(String mid, int index, String sdp, long id);
 
-    public abstract void onIceCompleted(Bundle context);
+    public abstract void onIceCompleted(long id);
 
     private static final class CppProxy extends Protocol
     {
@@ -104,19 +104,19 @@ public abstract class Protocol {
         private native void native_onAnswer(long _nativeRef, String sdp, Bundle context);
 
         @Override
-        public void onIceCandidate(String mid, int index, String sdp, Bundle context)
+        public void onIceCandidate(String mid, int index, String sdp, long id)
         {
             assert !this.destroyed.get() : "trying to use a destroyed object";
-            native_onIceCandidate(this.nativeRef, mid, index, sdp, context);
+            native_onIceCandidate(this.nativeRef, mid, index, sdp, id);
         }
-        private native void native_onIceCandidate(long _nativeRef, String mid, int index, String sdp, Bundle context);
+        private native void native_onIceCandidate(long _nativeRef, String mid, int index, String sdp, long id);
 
         @Override
-        public void onIceCompleted(Bundle context)
+        public void onIceCompleted(long id)
         {
             assert !this.destroyed.get() : "trying to use a destroyed object";
-            native_onIceCompleted(this.nativeRef, context);
+            native_onIceCompleted(this.nativeRef, id);
         }
-        private native void native_onIceCompleted(long _nativeRef, Bundle context);
+        private native void native_onIceCompleted(long _nativeRef, long id);
     }
 }

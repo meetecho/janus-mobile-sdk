@@ -5,6 +5,7 @@
 #import "JanusPluginFactory.h"
 #import "DJICppWrapperCache+Private.h"
 #import "DJIError.h"
+#import "DJIMarshal+Private.h"
 #import "DJIObjcWrapperCache+Private.h"
 #import "JanusPlugin+Private.h"
 #import "JanusProtocol+Private.h"
@@ -32,9 +33,11 @@ static_assert(__has_feature(objc_arc), "Djinni requires ARC to be enabled for th
     return self;
 }
 
-- (nullable id<JanusPlugin>)create:(nullable id<JanusProtocol>)owner {
+- (nullable id<JanusPlugin>)create:(int64_t)handleId
+                             owner:(nullable id<JanusProtocol>)owner {
     try {
-        auto objcpp_result_ = _cppRefHandle.get()->create(::djinni_generated::Protocol::toCpp(owner));
+        auto objcpp_result_ = _cppRefHandle.get()->create(::djinni::I64::toCpp(handleId),
+                                                          ::djinni_generated::Protocol::toCpp(owner));
         return ::djinni_generated::Plugin::fromCpp(objcpp_result_);
     } DJINNI_TRANSLATE_EXCEPTIONS()
 }
@@ -48,10 +51,11 @@ class PluginFactory::ObjcProxy final
     friend class ::djinni_generated::PluginFactory;
 public:
     using ObjcProxyBase::ObjcProxyBase;
-    std::shared_ptr<::Janus::Plugin> create(const std::shared_ptr<::Janus::Protocol> & c_owner) override
+    std::shared_ptr<::Janus::Plugin> create(int64_t c_handleId, const std::shared_ptr<::Janus::Protocol> & c_owner) override
     {
         @autoreleasepool {
-            auto objcpp_result_ = [djinni_private_get_proxied_objc_object() create:(::djinni_generated::Protocol::fromCpp(c_owner))];
+            auto objcpp_result_ = [djinni_private_get_proxied_objc_object() create:(::djinni::I64::fromCpp(c_handleId))
+                                                                             owner:(::djinni_generated::Protocol::fromCpp(c_owner))];
             return ::djinni_generated::Plugin::toCpp(objcpp_result_);
         }
     }

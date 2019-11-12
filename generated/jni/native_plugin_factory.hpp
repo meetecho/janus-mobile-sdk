@@ -33,14 +33,14 @@ private:
         JavaProxy(JniType j);
         ~JavaProxy();
 
-        std::shared_ptr<::Janus::Plugin> create(const std::shared_ptr<::Janus::Protocol> & owner) override;
+        std::shared_ptr<::Janus::Plugin> create(int64_t handleId, const std::shared_ptr<::Janus::Protocol> & owner) override;
 
     private:
         friend ::djinni::JniInterface<::Janus::PluginFactory, ::djinni_generated::NativePluginFactory>;
     };
 
     const ::djinni::GlobalRef<jclass> clazz { ::djinni::jniFindClass("com/github/helloiampau/janus/generated/PluginFactory") };
-    const jmethodID method_create { ::djinni::jniGetMethodID(clazz.get(), "create", "(Lcom/github/helloiampau/janus/generated/Protocol;)Lcom/github/helloiampau/janus/generated/Plugin;") };
+    const jmethodID method_create { ::djinni::jniGetMethodID(clazz.get(), "create", "(JLcom/github/helloiampau/janus/generated/Protocol;)Lcom/github/helloiampau/janus/generated/Plugin;") };
 };
 
 }  // namespace djinni_generated

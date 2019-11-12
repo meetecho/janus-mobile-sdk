@@ -32,9 +32,9 @@ public:
 
     virtual void onAnswer(const std::string & sdp, const std::shared_ptr<Bundle> & context) = 0;
 
-    virtual void onIceCandidate(const std::string & mid, int32_t index, const std::string & sdp, const std::shared_ptr<Bundle> & context) = 0;
+    virtual void onIceCandidate(const std::string & mid, int32_t index, const std::string & sdp, int64_t id) = 0;
 
-    virtual void onIceCompleted(const std::shared_ptr<Bundle> & context) = 0;
+    virtual void onIceCompleted(int64_t id) = 0;
 };
 
 }  // namespace Janus

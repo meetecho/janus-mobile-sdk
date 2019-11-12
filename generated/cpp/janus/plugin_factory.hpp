@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
 
 namespace Janus {
@@ -14,7 +15,7 @@ class PluginFactory {
 public:
     virtual ~PluginFactory() {}
 
-    virtual std::shared_ptr<Plugin> create(const std::shared_ptr<Protocol> & owner) = 0;
+    virtual std::shared_ptr<Plugin> create(int64_t handleId, const std::shared_ptr<Protocol> & owner) = 0;
 };
 
 }  // namespace Janus

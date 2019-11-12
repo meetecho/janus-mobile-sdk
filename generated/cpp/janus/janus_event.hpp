@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
 
 namespace Janus {
@@ -13,6 +14,8 @@ class Jsep;
 class JanusEvent {
 public:
     virtual ~JanusEvent() {}
+
+    virtual int64_t sender() = 0;
 
     virtual std::shared_ptr<Jsep> jsep() = 0;
 

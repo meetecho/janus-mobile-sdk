@@ -91,18 +91,18 @@ static_assert(__has_feature(objc_arc), "Djinni requires ARC to be enabled for th
 - (void)onIceCandidate:(nonnull NSString *)mid
                  index:(int32_t)index
                    sdp:(nonnull NSString *)sdp
-               context:(nullable JanusBundle *)context {
+                    id:(int64_t)id {
     try {
         _cppRefHandle.get()->onIceCandidate(::djinni::String::toCpp(mid),
                                             ::djinni::I32::toCpp(index),
                                             ::djinni::String::toCpp(sdp),
-                                            ::djinni_generated::Bundle::toCpp(context));
+                                            ::djinni::I64::toCpp(id));
     } DJINNI_TRANSLATE_EXCEPTIONS()
 }
 
-- (void)onIceCompleted:(nullable JanusBundle *)context {
+- (void)onIceCompleted:(int64_t)id {
     try {
-        _cppRefHandle.get()->onIceCompleted(::djinni_generated::Bundle::toCpp(context));
+        _cppRefHandle.get()->onIceCompleted(::djinni::I64::toCpp(id));
     } DJINNI_TRANSLATE_EXCEPTIONS()
 }
 
@@ -163,19 +163,19 @@ public:
                                                        context:(::djinni_generated::Bundle::fromCpp(c_context))];
         }
     }
-    void onIceCandidate(const std::string & c_mid, int32_t c_index, const std::string & c_sdp, const std::shared_ptr<::Janus::Bundle> & c_context) override
+    void onIceCandidate(const std::string & c_mid, int32_t c_index, const std::string & c_sdp, int64_t c_id) override
     {
         @autoreleasepool {
             [djinni_private_get_proxied_objc_object() onIceCandidate:(::djinni::String::fromCpp(c_mid))
                                                                index:(::djinni::I32::fromCpp(c_index))
                                                                  sdp:(::djinni::String::fromCpp(c_sdp))
-                                                             context:(::djinni_generated::Bundle::fromCpp(c_context))];
+                                                                  id:(::djinni::I64::fromCpp(c_id))];
         }
     }
-    void onIceCompleted(const std::shared_ptr<::Janus::Bundle> & c_context) override
+    void onIceCompleted(int64_t c_id) override
     {
         @autoreleasepool {
-            [djinni_private_get_proxied_objc_object() onIceCompleted:(::djinni_generated::Bundle::fromCpp(c_context))];
+            [djinni_private_get_proxied_objc_object() onIceCompleted:(::djinni::I64::fromCpp(c_id))];
         }
     }
 };

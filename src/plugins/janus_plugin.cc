@@ -2,10 +2,11 @@
 
 namespace Janus {
 
-  JanusPlugin::JanusPlugin(const std::shared_ptr<PluginCommandDelegate>& delegate, const std::shared_ptr<PeerFactory>& peerFactory, const std::shared_ptr<Protocol>& owner) {
+  JanusPlugin::JanusPlugin(int64_t handleId, const std::shared_ptr<PluginCommandDelegate>& delegate, const std::shared_ptr<PeerFactory>& peerFactory, const std::shared_ptr<Protocol>& owner) {
     this->_delegate = delegate;
     this->_peerFactory = peerFactory;
     this->_owner = owner;
+    this->_handleId = handleId;
   }
 
   void JanusPlugin::onClose() {

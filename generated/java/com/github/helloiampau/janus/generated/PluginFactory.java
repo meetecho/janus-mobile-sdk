@@ -6,7 +6,7 @@ package com.github.helloiampau.janus.generated;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class PluginFactory {
-    public abstract Plugin create(Protocol owner);
+    public abstract Plugin create(long handleId, Protocol owner);
 
     private static final class CppProxy extends PluginFactory
     {
@@ -32,11 +32,11 @@ public abstract class PluginFactory {
         }
 
         @Override
-        public Plugin create(Protocol owner)
+        public Plugin create(long handleId, Protocol owner)
         {
             assert !this.destroyed.get() : "trying to use a destroyed object";
-            return native_create(this.nativeRef, owner);
+            return native_create(this.nativeRef, handleId, owner);
         }
-        private native Plugin native_create(long _nativeRef, Protocol owner);
+        private native Plugin native_create(long _nativeRef, long handleId, Protocol owner);
     }
 }

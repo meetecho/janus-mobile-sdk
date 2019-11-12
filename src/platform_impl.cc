@@ -41,8 +41,8 @@ namespace Janus {
     this->_factories[id] = factory;
   }
 
-  std::shared_ptr<Plugin> PlatformImplImpl::plugin(const std::string& id, const std::shared_ptr<Protocol>& owner) {
-    auto plugin = this->_factories[id]->create(owner);
+  std::shared_ptr<Plugin> PlatformImplImpl::plugin(const std::string& id, int64_t handleId, const std::shared_ptr<Protocol>& owner) {
+    auto plugin = this->_factories[id]->create(handleId, owner);
 
     return plugin;
   }

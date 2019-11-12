@@ -55,17 +55,19 @@ namespace Janus {
 
       void onOffer(const std::string& sdp, const std::shared_ptr<Bundle>& context);
       void onAnswer(const std::string& sdp, const std::shared_ptr<Bundle>& context);
-      void onIceCandidate(const std::string& mid, int32_t index, const std::string& sdp, const std::shared_ptr<Bundle>& context);
-      void onIceCompleted(const std::shared_ptr<Bundle>& context);
+      void onIceCandidate(const std::string& mid, int32_t index, const std::string& sdp, int64_t id);
+      void onIceCompleted(int64_t id);
 
       void onCommandResult(const nlohmann::json& body, const std::shared_ptr<Bundle>& context);
       void onPluginEvent(const std::shared_ptr<JanusEvent>& event, const std::shared_ptr<Bundle>& context);
+
+      int64_t handleId(const std::shared_ptr<Bundle>& context);
 
     private:
       ReadyState readyState();
       void readyState(ReadyState readyState);
 
-      int64_t _handleId = 0;
+      int64_t _handleId = -1;
 
       std::shared_ptr<Plugin> _plugin = nullptr;
       std::shared_ptr<PlatformImpl> _platform;

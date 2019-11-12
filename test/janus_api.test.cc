@@ -26,6 +26,11 @@ using testing::IsEvent;
 using testing::HasJsep;
 using testing::IsError;
 
+#define TEST_SESSION_ID 276911837174840
+#define TEST_STRING_SESSION_ID "276911837174840"
+#define TEST_HANDLE_ID 276911837174841
+#define TEST_SLAVE_HANDLE_ID 276911837174842
+
 namespace Janus {
 
   class JanusApiTest : public testing::Test {
@@ -48,7 +53,7 @@ namespace Janus {
         this->_plugin = std::make_shared<NiceMock<PluginMock>>();
 
         this->_platform = std::make_shared<NiceMock<PlatformMock>>();
-        ON_CALL(*this->_platform, plugin("my yolo plugin", _)).WillByDefault(Return(this->_plugin));
+        ON_CALL(*this->_platform, plugin("my yolo plugin", TEST_HANDLE_ID, _)).WillByDefault(Return(this->_plugin));
       }
 
       std::shared_ptr<TransportFactoryMock> _factory;
@@ -80,7 +85,7 @@ namespace Janus {
     auto api = std::make_shared<JanusApi>(this->_random, this->_factory);
     api->init(this->_conf, this->_platform, this->_delegate);
 
-    EXPECT_CALL(*this->_transport, sessionId("276911837174840")).Times(1);
+    EXPECT_CALL(*this->_transport, sessionId(TEST_STRING_SESSION_ID)).Times(1);
 
     auto bundle = Bundle::create();
     bundle->setString("command", "create");
@@ -90,7 +95,7 @@ namespace Janus {
 
     nlohmann::json message = {
       { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
+      { "data", { { "id", TEST_SESSION_ID } } }
     };
 
     api->onMessage(message, bundle);
@@ -108,7 +113,7 @@ namespace Janus {
 
     nlohmann::json message = {
       { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
+      { "data", { { "id", TEST_HANDLE_ID } } }
     };
 
     api->onMessage(message, bundle);
@@ -127,7 +132,7 @@ namespace Janus {
 
     nlohmann::json message = {
       { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
+      { "data", { { "id", TEST_HANDLE_ID } } }
     };
 
     api->onMessage(message, bundle);
@@ -170,7 +175,7 @@ namespace Janus {
     bundle->setString("plugin", "my yolo plugin");
     nlohmann::json attachMessage = {
       { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
+      { "data", { { "id", TEST_HANDLE_ID } } }
     };
     api->onMessage(attachMessage, bundle);
 
@@ -184,7 +189,7 @@ namespace Janus {
     nlohmann::json trickle = {
       { "janus", "trickle" },
       { "transaction", "yolo random string" },
-      { "handle_id", 276911837174840 },
+      { "handle_id", TEST_HANDLE_ID },
       { "candidate", { { "sdpMid", "yolo" }, { "sdpMLineIndex", 69 }, { "candidate", "my yolo candidate" } } }
     };
 
@@ -199,11 +204,11 @@ namespace Janus {
     bundle->setString("command", "attach");
     nlohmann::json message = {
       { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
+      { "data", { { "id", TEST_HANDLE_ID } } }
     };
     api->onMessage(message, bundle);
 
-    api->onIceCandidate("yolo", 69, "my yolo candidate", bundle);
+    api->onIceCandidate("yolo", 69, "my yolo candidate", TEST_HANDLE_ID);
   }
 
   TEST_F(JanusApiTest, shouldSendATrickleCompletedMessageOnIceCompleted) {
@@ -213,7 +218,7 @@ namespace Janus {
     nlohmann::json trickle = {
       { "janus", "trickle" },
       { "transaction", "yolo random string" },
-      { "handle_id", 276911837174840 },
+      { "handle_id", TEST_HANDLE_ID },
       { "candidate", { { "completed", true } } }
     };
 
@@ -228,11 +233,11 @@ namespace Janus {
     bundle->setString("command", "attach");
     nlohmann::json message = {
       { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
+      { "data", { { "id", TEST_HANDLE_ID } } }
     };
     api->onMessage(message, bundle);
 
-    api->onIceCompleted(bundle);
+    api->onIceCompleted(TEST_HANDLE_ID);
   }
 
   TEST_F(JanusApiTest, shouldDelegateSdpEventsToPlugins) {
@@ -250,7 +255,7 @@ namespace Janus {
 
     nlohmann::json message = {
       { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
+      { "data", { { "id", TEST_HANDLE_ID } } }
     };
 
     api->onMessage(message, bundle);
@@ -265,7 +270,7 @@ namespace Janus {
     nlohmann::json message = {
       { "janus", "message" },
       { "transaction", "yolo random string" },
-      { "handle_id", 276911837174840 },
+      { "handle_id", TEST_HANDLE_ID },
       { "plugin_data", 42069 }
     };
 
@@ -282,43 +287,10 @@ namespace Janus {
     attachBundle->setString("command", "attach");
     nlohmann::json attachMessage = {
       { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
+      { "data", { { "id", TEST_HANDLE_ID } } }
     };
     api->onMessage(attachMessage, attachBundle);
 
-    api->onCommandResult(message, bundle);
-
-  }
-
-  TEST_F(JanusApiTest, shouldOverrideHandleIdForPluginMessages) {
-    auto api = std::make_shared<JanusApi>(this->_random, this->_factory);
-    api->init(this->_conf, this->_platform, this->_delegate);
-
-    nlohmann::json message = {
-      { "janus", "message" },
-      { "transaction", "yolo random string" },
-      { "handle_id", 42069 },
-      { "plugin_data", 42069 }
-    };
-
-    auto bundle = Bundle::create();
-
-    {
-      InSequence sequence;
-
-      EXPECT_CALL(*this->_transport, send(IsJsonEq(message), bundle)).Times(1);
-      EXPECT_CALL(*this->_transport, send(_, BundleHasString("command", "destroy"))).Times(1);
-    }
-
-    auto attachBundle = Bundle::create();
-    attachBundle->setString("command", "attach");
-    nlohmann::json attachMessage = {
-      { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
-    };
-    api->onMessage(attachMessage, attachBundle);
-
-    bundle->setInt("subscriberId", 42069);
     api->onCommandResult(message, bundle);
 
   }
@@ -336,7 +308,7 @@ namespace Janus {
     attachBundle->setString("plugin", "my yolo plugin");
     nlohmann::json attachMessage = {
       { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
+      { "data", { { "id", TEST_HANDLE_ID } } }
     };
     api->onMessage(attachMessage, attachBundle);
 
@@ -356,7 +328,7 @@ namespace Janus {
     attachBundle->setString("plugin", "my yolo plugin");
     nlohmann::json attachMessage = {
       { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
+      { "data", { { "id", TEST_HANDLE_ID } } }
     };
     api->onMessage(attachMessage, attachBundle);
 
@@ -385,7 +357,7 @@ namespace Janus {
     attachBundle->setString("plugin", "my yolo plugin");
     nlohmann::json attachMessage = {
       { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
+      { "data", { { "id", TEST_HANDLE_ID } } }
     };
     api->onMessage(attachMessage, attachBundle);
 
@@ -418,7 +390,7 @@ namespace Janus {
     attachBundle->setString("plugin", "my yolo plugin");
     nlohmann::json attachMessage = {
       { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
+      { "data", { { "id", TEST_HANDLE_ID } } }
     };
     api->onMessage(attachMessage, attachBundle);
 
@@ -460,7 +432,7 @@ namespace Janus {
   }
 
   TEST_F(JanusApiTest, shouldDelegatePluginEvents) {
-    auto event = std::make_shared<JanusEventImpl>(nlohmann::json::object());
+    auto event = std::make_shared<JanusEventImpl>(TEST_HANDLE_ID, nlohmann::json::object());
     auto context = Bundle::create();
 
     EXPECT_CALL(*this->_delegate, onEvent(Eq(event), Eq(context))).Times(1);
@@ -479,7 +451,7 @@ namespace Janus {
     attachBundle->setString("plugin", "my yolo plugin");
     nlohmann::json attachMessage = {
       { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
+      { "data", { { "id", TEST_HANDLE_ID } } }
     };
     api->onMessage(attachMessage, attachBundle);
 
@@ -488,7 +460,7 @@ namespace Janus {
     bundle->setString("plugin", "my slave yolo plugin");
     nlohmann::json message = {
       { "janus", "success" },
-      { "data", { { "id", 276911837174840 } } }
+      { "data", { { "id", TEST_SLAVE_HANDLE_ID } } }
     };
 
     EXPECT_CALL(*this->_plugin, onEvent(IsEvent("janus", "success"), bundle)).Times(1);
@@ -496,5 +468,14 @@ namespace Janus {
     api->onMessage(message, bundle);
   }
 
+  TEST_F(JanusApiTest, shouldOverrideTHeHandleIdWithContext) {
+    auto api = std::make_shared<JanusApi>(this->_random, this->_factory);
+
+    auto bundle = Bundle::create();
+    EXPECT_EQ(api->handleId(bundle), -1);
+
+    bundle->setInt("handleId", 69);
+    EXPECT_EQ(api->handleId(bundle), 69);
+  }
 
 }

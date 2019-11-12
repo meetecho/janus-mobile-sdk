@@ -14,8 +14,8 @@ namespace Janus {
 
       MOCK_METHOD2(onOffer, void(const std::string& sdp, const std::shared_ptr<Bundle>& context));
       MOCK_METHOD2(onAnswer, void(const std::string& sdp, const std::shared_ptr<Bundle>& context));
-      MOCK_METHOD4(onIceCandidate, void(const std::string& mid, int32_t index, const std::string& sdp, const std::shared_ptr<Bundle>& context));
-      MOCK_METHOD1(onIceCompleted, void(const std::shared_ptr<Bundle>& context));
+      MOCK_METHOD4(onIceCandidate, void(const std::string& mid, int32_t index, const std::string& sdp, int64_t id));
+      MOCK_METHOD1(onIceCompleted, void(int64_t id));
   };
 
 }

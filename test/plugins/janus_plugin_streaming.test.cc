@@ -29,7 +29,7 @@ namespace Janus {
         this->_owner = std::make_shared<NiceMock<ProtocolMock>>();
 
         this->_peerFactory = std::make_shared<NiceMock<PeerFactoryMock>>();
-        ON_CALL(*this->_peerFactory, create(-1, Eq(this->_owner))).WillByDefault(Return(this->_peer));
+        ON_CALL(*this->_peerFactory, create(69, Eq(this->_owner))).WillByDefault(Return(this->_peer));
       }
 
       std::shared_ptr<NiceMock<PeerMock>> _peer;
@@ -46,7 +46,7 @@ namespace Janus {
     auto bundle = Bundle::create();
 
     EXPECT_CALL(*this->_delegate, onCommandResult(IsJsonEq(msg), bundle));
-    auto plugin = std::make_shared<JanusPluginStreaming>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginStreaming>(69, this->_delegate, this->_peerFactory, this->_owner);
     plugin->command(JanusCommands::LIST, bundle);
   }
 
@@ -65,7 +65,7 @@ namespace Janus {
     bundle->setInt("id", 42069);
 
     EXPECT_CALL(*this->_delegate, onCommandResult(IsJsonEq(msg), bundle));
-    auto plugin = std::make_shared<JanusPluginStreaming>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginStreaming>(69, this->_delegate, this->_peerFactory, this->_owner);
     plugin->command(JanusCommands::WATCH, bundle);
   }
 
@@ -84,12 +84,12 @@ namespace Janus {
       { "sdp", "the sdp" }
     };
 
-    auto event = std::make_shared<JanusEventImpl>(data, jsep);
+    auto event = std::make_shared<JanusEventImpl>(69, data, jsep);
 
     auto bundle = Bundle::create();
     bundle->setInt("id", 42069);
 
-    auto plugin = std::make_shared<JanusPluginStreaming>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginStreaming>(69, this->_delegate, this->_peerFactory, this->_owner);
     plugin->command(JanusCommands::WATCH, bundle);
     plugin->onEvent(event, unused);
   }
@@ -121,7 +121,7 @@ namespace Janus {
     }
 
     EXPECT_CALL(*this->_peer, setLocalDescription(SdpType::ANSWER, "the sdp"));
-    auto plugin = std::make_shared<JanusPluginStreaming>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginStreaming>(69, this->_delegate, this->_peerFactory, this->_owner);
 
     plugin->command(JanusCommands::WATCH, watchBundle);
 
@@ -130,7 +130,7 @@ namespace Janus {
       { "type", "offer" },
       { "sdp", "the sdp" }
     };
-    auto event = std::make_shared<JanusEventImpl>(data, jsep);
+    auto event = std::make_shared<JanusEventImpl>(69, data, jsep);
     auto unused = Bundle::create();
     plugin->onEvent(event, unused);
 
@@ -146,7 +146,7 @@ namespace Janus {
 
     EXPECT_CALL(*this->_delegate, onCommandResult(IsJsonEq(msg), bundle));
 
-    auto plugin = std::make_shared<JanusPluginStreaming>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginStreaming>(69, this->_delegate, this->_peerFactory, this->_owner);
     plugin->command(JanusCommands::START, bundle);
   }
 
@@ -158,7 +158,7 @@ namespace Janus {
 
     EXPECT_CALL(*this->_delegate, onCommandResult(IsJsonEq(msg), bundle));
 
-    auto plugin = std::make_shared<JanusPluginStreaming>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginStreaming>(69, this->_delegate, this->_peerFactory, this->_owner);
     plugin->command(JanusCommands::STOP, bundle);
   }
 
@@ -171,16 +171,16 @@ namespace Janus {
 
     EXPECT_CALL(*this->_delegate, onCommandResult(IsJsonEq(msg), bundle));
 
-    auto plugin = std::make_shared<JanusPluginStreaming>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginStreaming>(69, this->_delegate, this->_peerFactory, this->_owner);
     plugin->command(JanusCommands::PAUSE, bundle);
   }
 
   TEST_F(JanusPluginStreamingTest, shouldDelegateUnhandledEvents) {
     auto context = Bundle::create();
-    auto event = std::make_shared<JanusEventImpl>(nlohmann::json::object());
+    auto event = std::make_shared<JanusEventImpl>(69, nlohmann::json::object());
     EXPECT_CALL(*this->_delegate, onPluginEvent(Eq(event), Eq(context)));
 
-    auto plugin = std::make_shared<JanusPluginStreaming>(this->_delegate, this->_peerFactory, this->_owner);
+    auto plugin = std::make_shared<JanusPluginStreaming>(69, this->_delegate, this->_peerFactory, this->_owner);
     plugin->onEvent(event, context);
   }
 
@@ -193,7 +193,7 @@ namespace Janus {
     auto delegate = std::make_shared<NiceMock<PluginCommandDelegateMock>>();
 
     auto factory = std::make_shared<JanusPluginStreamingFactory>(delegate, peerFactory);
-    EXPECT_NE(factory->create(owner), nullptr);
+    EXPECT_NE(factory->create(69, owner), nullptr);
   }
 
 }
