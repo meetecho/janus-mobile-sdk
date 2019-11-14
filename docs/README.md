@@ -11,7 +11,7 @@ Start using Janus Client SDK is as easy as cloning a git repo on your local mach
 
 ```bash
 git clone https://github.com/meetecho/janus-mobile-sdk
-cd janus-client
+cd janus-mobile-sdk
 make
 ```
 
