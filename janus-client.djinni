@@ -130,6 +130,8 @@ platform = interface +c {
   protocol(protocol: protocol);
   pluginFactory(id: string, factory: plugin_factory);
 
+  peerFactory(): peer_factory;
+
   static create(factory: peer_factory): platform;
 }
 

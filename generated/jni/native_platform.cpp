@@ -41,6 +41,16 @@ CJNIEXPORT void JNICALL Java_com_github_helloiampau_janus_generated_Platform_000
     } JNI_TRANSLATE_EXCEPTIONS_RETURN(jniEnv, )
 }
 
+CJNIEXPORT jobject JNICALL Java_com_github_helloiampau_janus_generated_Platform_00024CppProxy_native_1peerFactory(JNIEnv* jniEnv, jobject /*this*/, jlong nativeRef)
+{
+    try {
+        DJINNI_FUNCTION_PROLOGUE1(jniEnv, nativeRef);
+        const auto& ref = ::djinni::objectFromHandleAddress<::Janus::Platform>(nativeRef);
+        auto r = ref->peerFactory();
+        return ::djinni::release(::djinni_generated::NativePeerFactory::fromCpp(jniEnv, r));
+    } JNI_TRANSLATE_EXCEPTIONS_RETURN(jniEnv, 0 /* value doesn't matter */)
+}
+
 CJNIEXPORT jobject JNICALL Java_com_github_helloiampau_janus_generated_Platform_00024CppProxy_create(JNIEnv* jniEnv, jobject /*this*/, jobject j_factory)
 {
     try {

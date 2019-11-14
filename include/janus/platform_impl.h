@@ -34,10 +34,12 @@ namespace Janus {
       void pluginFactory(const std::string& id, const std::shared_ptr<PluginFactory>& factory);
       std::shared_ptr<Plugin> plugin(const std::string& id, int64_t handleId, const std::shared_ptr<Protocol>& owner);
 
+      std::shared_ptr<PeerFactory> peerFactory();
+
     private:
       std::shared_ptr<Protocol> _protocol;
-
       std::unordered_map<std::string, std::shared_ptr<PluginFactory>> _factories;
+      std::shared_ptr<PeerFactory> _peerFactory;
   };
 
 }

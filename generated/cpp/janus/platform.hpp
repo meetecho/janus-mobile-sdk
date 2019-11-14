@@ -20,6 +20,8 @@ public:
 
     virtual void pluginFactory(const std::string & id, const std::shared_ptr<PluginFactory> & factory) = 0;
 
+    virtual std::shared_ptr<PeerFactory> peerFactory() = 0;
+
     static std::shared_ptr<Platform> create(const std::shared_ptr<PeerFactory> & factory);
 };
 

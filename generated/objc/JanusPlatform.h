@@ -15,6 +15,8 @@
 - (void)pluginFactory:(nonnull NSString *)id
               factory:(nullable id<JanusPluginFactory>)factory;
 
+- (nullable id<JanusPeerFactory>)peerFactory;
+
 + (nullable JanusPlatform *)create:(nullable id<JanusPeerFactory>)factory;
 
 @end
