@@ -58,6 +58,13 @@ namespace Janus {
     platform->plugin(JanusPlugins::ECHO_TEST, 69, owner);
   }
 
+  TEST_F(PlatformImplTest, shouldGetThePeerFactory) {
+    auto peerFactory = std::make_shared<NiceMock<PeerFactoryMock>>();
+    auto platform = std::make_shared<PlatformImplImpl>(peerFactory);
+
+    EXPECT_EQ(platform->peerFactory(), peerFactory);
+  }
+
   class PlatformTest : public testing::Test {
     protected:
       void SetUp() override {

@@ -1,15 +1,26 @@
+<div style="text-align:center">
+  <img alt="logo" src="_media/logo.png"/>
+  <h1>Janus Client SDK</h1>
+
+  <h4>The <a href="https://github.com/meetecho/janus-gateway">Janus Gateway</a> client SDK for native environments</h4>
+</div>
+
 # Getting Started
 
 Start using Janus Client SDK is as easy as cloning a git repo on your local machine. In fact, you only need to clone the main repo in your workspace and run the initialization script.
 
 ```bash
-git clone https://github.com/helloiampau/janus-client
+git clone https://github.com/meetecho/janus-mobile-sdk
 cd janus-client
 make
 ```
 
 The `make` command downloads all the native dependencies you need to build the library on each platform.
-Once the `make` command finished, you are ready to link the platform-specific code to your iOS or Android project.
+Once the `make` command finished, you are ready to link the platform-specific code to your C++, Android or iOS project.
+
+## C++
+
+TBD
 
 ## Android
 
@@ -61,12 +72,11 @@ As final step you need to declare the required permission in your application `A
 ```gradle
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.github.helloiampau.petsapp">
 
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE">
-  <uses-permission android:name="android.permission.INTERNET">
-  <uses-permission android:name="android.permission.CAMERA">
-  <uses-permission android:name="android.permission.RECORD_AUDIO">
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE">
-  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS">
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+  <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
   ...
 
@@ -87,12 +97,160 @@ TBD
 
 TBD
 
+## Plugins
+
+TBD
+
+### Echotest
+
+TBD
+
+### Streaming
+
+TBD
+
+### Videoroom
+
+TBD
+
 # Messing around with the library
+
+Suppose you already integrated Janus in your own server-side environment by either installing it behind a proxy API or by building your custom plugin. 
+Janus-Client SDK meets your needs by providing you with a set of handly interfaces you can use to inject your custom business logic within the framework. And, if you don't like C++ as the default programming language, you can use Java for Android and Objective C for iOS as well!
+
+Take a look at the `JanusFactory` class:
+
+<!-- tabs:start -->
+
+#### **C++**
+
+```cpp
+TBD
+```
+
+#### **Java**
+
+```java
+public class JanusFactory {
+  public void protocol(Protocol protocol) {
+    ...
+  }
+
+  public void pluginFactory(String id, PluginFactory factory) {
+    ...
+  }
+
+  ...
+}
+```
+
+#### **Objective C**
+
+```objectivec
+TBD
+```
+
+<!-- tabs:end -->
+
+it has two magical methods `protocol(Protocol protocol)` and `pluginFactory(String id, PluginFactory factory)` you can use to register your custom protocol and your custom plugins. 
+
+So, once you have your custom classes created, you only need to pass them to one of these two methods **BEFORE** creating the Janus service like this:
+
+<!-- tabs:start -->
+
+#### **C++**
+
+```cpp
+TBD
+```
+
+#### **Java**
+
+```java
+JanusFactory factory = new JanusFactory();
+
+// replace the Janus API with your custom protocol
+CustomProtocol protocol = new CustomProtocol();
+factory.protocol(protocol);
+
+// adding a useless plugin
+CustomPluginFactory pluginFactory = new CustomPluginFactory();
+factory.pluginFactory("my.yolo.plugin", pluginFactory);
+
+Janus janus = factory.create(conf, self, activity.getApplicationContext());
+```
+
+#### **Objective C**
+
+```objectivec
+TBD
+```
+
+<!-- tabs:end -->
+
+and we are OK. Easy, isn't it?
+
+## Implement your custom protocol
+
+<!-- tabs:start -->
+
+#### **C++**
+
+```cpp
+class Protocol {
+  public:
+    virtual std::string name() = 0;
+    virtual void init(const std::shared_ptr<JanusConf> & conf, const std::shared_ptr<Platform> & platform, const std::shared_ptr<ProtocolDelegate> & delegate) = 0;
+    virtual void dispatch(const std::string & command, const std::shared_ptr<Bundle> & payload) = 0;
+    virtual void hangup() = 0;
+    virtual void close() = 0;
+    virtual void onOffer(const std::string & sdp, const std::shared_ptr<Bundle> & context) = 0;
+    virtual void onAnswer(const std::string & sdp, const std::shared_ptr<Bundle> & context) = 0;
+    virtual void onIceCandidate(const std::string & mid, int32_t index, const std::string & sdp, int64_t id) = 0;
+    virtual void onIceCompleted(int64_t id) = 0;
+};
+```
+
+#### **Java**
+
+```java
+public abstract class Protocol {
+    public abstract String name();
+    public abstract void init(JanusConf conf, Platform platform, ProtocolDelegate delegate);
+    public abstract void dispatch(String command, Bundle payload);
+    public abstract void hangup();
+    public abstract void close();
+    public abstract void onOffer(String sdp, Bundle context);
+    public abstract void onAnswer(String sdp, Bundle context);
+    public abstract void onIceCandidate(String mid, int index, String sdp, long id);
+    public abstract void onIceCompleted(long id);
+}
+```
+
+#### **Objective C**
+
+```objectivec
+TBD
+```
+
+<!-- tabs:end -->
+
+## Extend with your custom plugin
+
+TBD
 
 ## The environment
 
 We provide you with a complete playground, based on docker and docker-compose frameworks, you can use during your real-time application development.
 If you don't know what docker is, you should be ashamed, and you should read the official [documentation](https://docs.docker.com/)
+
+If you have a working installation of docker and docker-compose on your machine, you can start the entire development environment by running
+
+```bash
+docker-compose up
+```
+
+from the root folder of the project.
 
 ### Janus
 
@@ -121,10 +279,6 @@ You can run a self-hosted version of this documentation by running:
 ```bash
 docker-compose run -p 8080:80 docs
 ```
-
-## Anatomy of the library
-
-The janus-client SDK is a C++ library
 
 ## Debug the C++ layer
 

@@ -10,6 +10,8 @@ public abstract class Platform {
 
     public abstract void pluginFactory(String id, PluginFactory factory);
 
+    public abstract PeerFactory peerFactory();
+
     public static Platform create(PeerFactory factory)
     {
         return CppProxy.create(factory);
@@ -53,6 +55,14 @@ public abstract class Platform {
             native_pluginFactory(this.nativeRef, id, factory);
         }
         private native void native_pluginFactory(long _nativeRef, String id, PluginFactory factory);
+
+        @Override
+        public PeerFactory peerFactory()
+        {
+            assert !this.destroyed.get() : "trying to use a destroyed object";
+            return native_peerFactory(this.nativeRef);
+        }
+        private native PeerFactory native_peerFactory(long _nativeRef);
 
         public static native Platform create(PeerFactory factory);
     }

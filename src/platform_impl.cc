@@ -27,6 +27,8 @@ namespace Janus {
 
     auto videoroomFactory = std::make_shared<JanusPluginVideoroomFactory>(protocol, factory);
     this->pluginFactory(JanusPlugins::VIDEOROOM, videoroomFactory);
+
+    this->_peerFactory = factory;
   }
 
   void PlatformImplImpl::protocol(const std::shared_ptr<Protocol>& protocol) {
@@ -45,6 +47,10 @@ namespace Janus {
     auto plugin = this->_factories[id]->create(handleId, owner);
 
     return plugin;
+  }
+
+  std::shared_ptr<PeerFactory> PlatformImplImpl::peerFactory() {
+    return this->_peerFactory;
   }
 
   /* Platform */
