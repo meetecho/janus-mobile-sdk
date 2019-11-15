@@ -18,6 +18,10 @@ make
 The `make` command downloads all the native dependencies you need to build the library on each platform.
 Once the `make` command finished, you are ready to link the platform-specific code to your C++, Android or iOS project.
 
+## Note for Windows Users
+
+This project uses a set of unix tools to build. We suggest you to use the [WSL](https://docs.microsoft.com/en-us/windows/wsl/about) in order to avoid headaches!
+
 ## C++
 
 TBD
