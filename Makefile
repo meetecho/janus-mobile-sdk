@@ -7,11 +7,11 @@ all: deps
 folder:
 	mkdir -p third_party/
 
-mbedtls:
-	if [ ! -d third_party/mbedtls ]; then git clone https://github.com/ARMmbed/mbedtls third_party/mbedtls && cd third_party/mbedtls && git checkout mbedtls-2.15.1; fi
+boringssl:
+	if [ ! -d third_party/boringssl ]; then git clone https://boringssl.googlesource.com/boringssl third_party/boringssl && cd third_party/boringssl && git checkout 5f14300d2ba3681f14af8a97ec2026bc6ac2249b; fi
 
 curl:
-	if [ ! -d third_party/curl ]; then git clone https://github.com/curl/curl third_party/curl && cd third_party/curl && git checkout curl-7_63_0; fi
+	if [ ! -d third_party/curl ]; then git clone https://github.com/curl/curl third_party/curl && cd third_party/curl && git checkout curl-7_67_0; fi
 
 djinni:
 	if [ ! -d third_party/djinni ]; then git clone https://github.com/helloiampau/djinni third_party/djinni && cd third_party/djinni && git checkout ac7d0d21449922143ccdeb1751b6a09a5a9ca790; fi
@@ -25,7 +25,7 @@ googletest:
 googletest_bundle: googletest
 	if [ ! -d third_party/googletest_bundle ]; then third_party/googletest/googlemock/scripts/fuse_gmock_files.py third_party/googletest_bundle; fi
 
-deps: folder mbedtls curl json googletest_bundle djinni
+deps: folder boringssl curl json googletest_bundle djinni
 
 gluecode: djinni
 	cd third_party/djinni && rm -rf src/target && src/run --java-out $(GENERATED_DIR)/java/com/github/helloiampau/janus/generated --java-package com.github.helloiampau.janus.generated --cpp-out $(GENERATED_DIR)/cpp/janus --cpp-namespace Janus --jni-out $(GENERATED_DIR)/jni --ident-jni-file native_foo_bar --ident-jni-class NativeFooBar --objc-out $(GENERATED_DIR)/objc --objc-type-prefix Janus --objcpp-out $(GENERATED_DIR)/objcpp --idl $(ROOT_DIR)/janus-client.djinni
@@ -54,4 +54,4 @@ coverage: clean_tests
 debugger:
 	gdbgui --host 0.0.0.0 build/janus_tests
 
-.PHONY: all mbedtls curl djinni googletest deps gluecode clean_lib clean_tests memory_test thread_test coverage debugger json googletest_bundle test
+.PHONY: all boringssl curl djinni googletest deps gluecode clean_lib clean_tests memory_test thread_test coverage debugger json googletest_bundle test

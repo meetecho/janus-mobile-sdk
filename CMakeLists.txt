@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.6)
+cmake_minimum_required(VERSION 3.10)
 project(janus-client-sdk)
 
 include(ExternalProject)
@@ -29,16 +29,17 @@ endif()
   # set(ENV_ARGS ${ENV_ARGS} -DCMAKE_OSX_SYSROOT=iphoneos -DCMAKE_OSX_ARCHITECTURES=armv7 -DCMAKE_XCODE_EFFECTIVE_PLATFORMS="-iphoneos;-iphonesimulator" -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO" -DCMAKE_XCODE_ATTRIBUTE_ENABLE_BITCODE="NO" -DCMAKE_CXX_COMPILER_WORKS=TRUE -DCMAKE_C_COMPILER_WORKS=TRUE -DCMAKE_MACOSX_BUNDLE=YES)
 # endif()
 
-ExternalProject_Add(mbedtls_proj
-  PREFIX ${CMAKE_BINARY_DIR}/third_party/mbedtls
-  SOURCE_DIR ${THIRD_PARTY_DIR}/mbedtls
-  CMAKE_ARGS ${ENV_ARGS} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/third_party -DENABLE_PROGRAMS=OFF -DENABLE_TESTING=OFF)
+ExternalProject_Add(boringssl_proj
+  PREFIX ${CMAKE_BINARY_DIR}/third_party/boringssl
+  SOURCE_DIR ${THIRD_PARTY_DIR}/boringssl
+  INSTALL_COMMAND mkdir -p ${CMAKE_BINARY_DIR}/third_party/lib && cp -rfv ${CMAKE_BINARY_DIR}/third_party/boringssl/src/boringssl_proj-build/ssl/libssl.a ${CMAKE_BINARY_DIR}/third_party/boringssl/src/boringssl_proj-build/crypto/libcrypto.a ${CMAKE_BINARY_DIR}/third_party/lib && mkdir -p ${CMAKE_BINARY_DIR}/third_party/include && cp -rfv ${THIRD_PARTY_DIR}/boringssl/include/openssl ${CMAKE_BINARY_DIR}/third_party/include
+  CMAKE_ARGS ${ENV_ARGS} -DOPENSSL_SMALL=1)
 
 ExternalProject_Add(curl_proj
-  DEPENDS mbedtls_proj
+  DEPENDS boringssl_proj
   PREFIX ${CMAKE_BINARY_DIR}/third_party/curl
   SOURCE_DIR ${THIRD_PARTY_DIR}/curl
-  CMAKE_ARGS ${ENV_ARGS} -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/third_party -DHAVE_POLL_FINE_EXITCODE=OFF -DCURL_ZLIB=OFF -DCMAKE_USE_MBEDTLS=ON -DHTTP_ONLY=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DUSE_MANUAL=OFF -DBUILD_CURL_EXE=OFF -DENABLE_THREADED_RESOLVER=OFF -DMBEDTLS_INCLUDE_DIRS=${CMAKE_BINARY_DIR}/third_party/include -DMBEDCRYPTO_LIBRARY=${CMAKE_BINARY_DIR}/third_party/lib/libmbedcrypto.a -DMBEDTLS_LIBRARY=${CMAKE_BINARY_DIR}/third_party/lib/libmbedtls.a -DMBEDX509_LIBRARY=${CMAKE_BINARY_DIR}/third_party/lib/libmbedx509.a)
+  CMAKE_ARGS ${ENV_ARGS} -DCMAKE_USE_LIBSSH2=OFF -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/third_party -DHAVE_POLL_FINE_EXITCODE=OFF -DCURL_ZLIB=OFF -DHTTP_ONLY=ON -DBUILD_SHARED_LIBS=OFF -DBUILD_TESTING=OFF -DUSE_MANUAL=OFF -DBUILD_CURL_EXE=OFF -DENABLE_THREADED_RESOLVER=OFF -DOPENSSL_SSL_LIBRARY=${CMAKE_BINARY_DIR}/third_party/lib/libssl.a -DOPENSSL_CRYPTO_LIBRARY=${CMAKE_BINARY_DIR}/third_party/lib/libcrypto.a -DOPENSSL_INCLUDE_DIR=${CMAKE_BINARY_DIR}/third_party/include)
 
 ExternalProject_Add(json_proj
   PREFIX ${CMAKE_BINARY_DIR}/third_party/json
@@ -62,9 +63,8 @@ target_include_directories(janus
 
 target_link_libraries(janus
   curl
-  mbedtls
-  mbedx509
-  mbedcrypto)
+  ssl
+  crypto)
 
 add_dependencies(janus
   json_proj
