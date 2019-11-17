@@ -1,5 +1,5 @@
 <div align="center" style="text-align:center">
-  <img alt="logo" src="docs/_media/logo.png"/>
+  <img alt="logo" src="_media/logo.png"/>
   <h1>Janus Client SDK</h1>
 
   <h4>The <a href="https://github.com/meetecho/janus-gateway">Janus Gateway</a> client SDK for native environments</h4>
