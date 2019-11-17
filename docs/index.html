@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
   <link rel="stylesheet" href="custom.css">
   <link rel="stylesheet" href="//unpkg.com/prism-themes@1.2.0/themes/prism-dracula.css">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
   <div id="app">Loading...</div>
@@ -29,7 +30,10 @@
       name: 'Janus Client SDK',
       repo: 'https://github.com/meetecho/janus-mobile-sdk',
       ga: 'UA-152623130-1',
-      DocsifyCodefund.create('631')
+      search: 'auto',
+      plugins: [
+        DocsifyCodefund.create('631')
+      ]
     }
   </script>
 </body>
