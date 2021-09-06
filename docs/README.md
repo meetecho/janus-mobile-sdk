@@ -1,3 +1,4 @@
+This project has been abandoned. <br/>
 <div align="center" style="text-align:center">
   <img alt="logo" src="_media/logo.png"/>
   <h1>Janus Client SDK</h1>
